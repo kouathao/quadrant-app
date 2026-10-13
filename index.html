@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quadrant — Keyboard window management for Mac</title>
+<meta name="description" content="Snap, resize and move Mac windows with keyboard shortcuts. Native for Apple Silicon. Free.">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbfbfd; --surface: #ffffff; --text: #1d1d1f; --muted: #6e6e73; --line: #e5e5ea;
+    --accent: #4f5bf7; --accent-2: #19a0fa; --key-bg: #f2f2f7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0d0d12; --surface: #17171f; --text: #f5f5f7; --muted: #a1a1aa; --line: #2a2a35; --key-bg: #23232e; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.55; }
+  a { color: inherit; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; text-decoration: none; }
+  .brand img { width: 32px; height: 32px; }
+  nav .links a { margin-left: 22px; color: var(--muted); text-decoration: none; font-size: 15px; }
+  nav .links a:hover { color: var(--text); }
+
+  .hero { text-align: center; padding: 56px 0 32px; }
+  .hero img.logo { width: 112px; height: 112px; }
+  h1 { font-size: clamp(36px, 6vw, 60px); line-height: 1.05; letter-spacing: -0.03em; margin: 18px 0 14px; font-weight: 800; }
+  h1 span { background: linear-gradient(100deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lede { font-size: 20px; color: var(--muted); max-width: 640px; margin: 0 auto 30px; }
+  .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 14px 26px; border-radius: 12px; font-weight: 600; text-decoration: none; font-size: 16px; }
+  .btn.primary { background: linear-gradient(100deg, var(--accent), var(--accent-2)); color: #fff; box-shadow: 0 8px 24px rgba(79,91,247,.3); }
+  .btn.secondary { background: var(--surface); border: 1px solid var(--line); }
+  .fine { color: var(--muted); font-size: 13px; margin-top: 14px; }
+
+  .demo { margin: 48px auto 0; max-width: 760px; aspect-ratio: 16/10; border-radius: 18px; border: 1px solid var(--line);
+    background: linear-gradient(160deg, #2b2d6e, #0f5f9c); position: relative; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.18); }
+  .demo .bar { height: 22px; background: rgba(255,255,255,.18); }
+  .demo .win { position: absolute; background: rgba(255,255,255,.92); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    transition: all .55s cubic-bezier(.2,.8,.2,1); }
+  .demo .win::before { content: ""; position: absolute; top: 9px; left: 10px; width: 34px; height: 9px;
+    background: radial-gradient(circle at 4px 4px, #ff5f57 4px, transparent 4.5px), radial-gradient(circle at 17px 4px, #febc2e 4px, transparent 4.5px), radial-gradient(circle at 30px 4px, #28c840 4px, transparent 4.5px); }
+  .demo .keys { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,.55); color: #fff;
+    padding: 8px 16px; border-radius: 10px; font-size: 18px; font-weight: 600; letter-spacing: .05em; backdrop-filter: blur(8px); }
+
+  section { padding: 72px 0; }
+  h2 { font-size: 34px; letter-spacing: -0.02em; text-align: center; margin: 0 0 12px; }
+  .sub { text-align: center; color: var(--muted); margin: 0 auto 40px; max-width: 560px; }
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
+  .card h3 { margin: 0 0 6px; font-size: 17px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  td { padding: 12px 18px; border-bottom: 1px solid var(--line); font-size: 15px; }
+  tr:last-child td { border-bottom: 0; }
+  td.k { text-align: right; white-space: nowrap; }
+  td.k kbd { white-space: nowrap; display: inline-block; margin: 2px 0 2px 4px; }
+  kbd { font-family: inherit; background: var(--key-bg); border: 1px solid var(--line); border-radius: 7px; padding: 3px 9px; font-size: 14px; }
+  .shortcuts { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+  .shortcuts .col { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  th { text-align: left; padding: 12px 18px; font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); background: var(--key-bg); }
+  .see { margin: 14px 0 0; font-weight: 600; }
+  .see a { color: var(--accent); text-decoration: none; }
+  .see a.btn { color: var(--text); }
+
+  .tips { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+  .tip { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 24px; width: 280px; text-align: center; }
+  .tip img { width: 100%; aspect-ratio: 1; object-fit: contain; background: #fff; border-radius: 12px; display: block; }
+  .tip .handle { color: var(--muted); margin: 12px 0 16px; font-weight: 500; }
+  .tip .btn { display: block; }
+
+  .card { position: relative; }
+  .new { position: absolute; top: 16px; right: 16px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    color: #fff; background: linear-gradient(100deg, var(--accent), var(--accent-2)); padding: 3px 8px; border-radius: 99px; }
+
+  .guide { display: flex; gap: 32px; align-items: center; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 18px; padding: 28px; margin-bottom: 18px; }
+  .guide-text { flex: 1; min-width: 0; }
+  .guide h3 { margin: 0 0 12px; font-size: 20px; display: flex; align-items: center; gap: 12px; }
+  .guide .num { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; flex: none;
+    background: linear-gradient(100deg, var(--accent), var(--accent-2)); color: #fff; font-size: 15px; }
+  .guide ol { margin: 0; padding-left: 22px; }
+  .guide li { margin: 6px 0; }
+  .tip-note { color: var(--muted); font-size: 14px; margin: 12px 0 0; }
+  .glyph { font-weight: 700; }
+
+  .unverified { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); }
+  .unverified h4 { margin: 0 0 6px; font-size: 17px; }
+  .mac-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 18px 0 6px; }
+  .mac-steps figure { margin: 0; }
+  .mac-steps figcaption { font-size: 14px; color: var(--muted); margin-top: 10px; }
+  .mac-steps figcaption b { color: var(--text); }
+  .mock { height: 200px; border-radius: 12px; border: 1px solid var(--line); background: var(--key-bg);
+    font-size: 11px; line-height: 1.35; color: var(--text); overflow: hidden; }
+  .mock.dialog { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 6px; padding: 14px 16px; }
+  .mock.dialog img { width: 38px; height: 38px; }
+  .mock.dialog strong { font-size: 12px; }
+  .mock.dialog span { color: var(--muted); }
+  .mbtns { display: flex; gap: 6px; width: 100%; margin-top: 4px; }
+  .mbtns i, .mock .pane i { flex: 1; font-style: normal; font-weight: 500; padding: 5px 8px; border-radius: 7px; background: var(--surface); border: 1px solid var(--line); }
+  .mock i.hl { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .mock.settings { display: flex; }
+  .mock .side { width: 38%; background: var(--surface); border-right: 1px solid var(--line); padding: 10px 8px; display: flex; flex-direction: column; gap: 7px; }
+  .mock .side i { height: 9px; border-radius: 4px; background: var(--line); }
+  .mock .side i.on { height: auto; font-style: normal; font-size: 10px; font-weight: 600; padding: 4px 6px; background: var(--accent); color: #fff; }
+  .mock .pane { flex: 1; padding: 14px 12px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; justify-content: center; }
+  .mock .pane span { color: var(--muted); }
+  .mock .pane i { flex: none; box-shadow: 0 0 0 3px rgba(79,91,247,.35); }
+
+  .zones { flex: none; width: 300px; aspect-ratio: 16/10; display: grid; grid-template-columns: 22% 1fr 22%;
+    grid-template-rows: 26% 1fr 26%; gap: 4px; padding: 6px; border-radius: 12px; background: linear-gradient(160deg, #2b2d6e, #0f5f9c); }
+  .z { display: grid; place-items: center; text-align: center; font-size: 11px; font-weight: 600; color: #fff; border-radius: 6px; }
+  .z.edge { background: rgba(79,91,247,.55); border: 1px solid rgba(255,255,255,.5); }
+  .z.corner { background: rgba(25,160,250,.55); border: 1px solid rgba(255,255,255,.5); }
+  .z.mid { color: rgba(255,255,255,.75); font-weight: 500; }
+
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; margin-bottom: 10px; }
+  summary { font-weight: 600; cursor: pointer; }
+  details p { color: var(--muted); margin: 10px 0 0; }
+  footer { padding: 40px 0 60px; text-align: center; color: var(--muted); font-size: 14px; }
+
+  @media (max-width: 680px) {
+    .shortcuts { grid-template-columns: 1fr; }
+    td { padding: 10px 12px; font-size: 14px; }
+    td.k { white-space: normal; }
+    .guide { flex-direction: column; align-items: stretch; padding: 22px; }
+    .zones { width: 100%; }
+    .mac-steps { grid-template-columns: 1fr; }
+    nav .links a:not(.buy) { display: none; }
+    section { padding: 52px 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="#"><img src="icon.png" alt="">Quadrant</a>
+    <div class="links">
+      <a href="#features">Features</a>
+      <a href="#how-to">How to</a>
+      <a href="guide.html">Guide</a>
+      <a href="#shortcuts">Shortcuts</a>
+      <a href="#faq">FAQ</a>
+      <a class="buy" href="#support">Support ☕</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <img class="logo" src="icon.png" alt="Quadrant icon">
+    <h1>Move windows at the<br><span>speed of your keyboard.</span></h1>
+    <p class="lede">Snap any window to halves, thirds, corners or another display with one shortcut, drag it to a screen edge, or move it from anywhere. Save whole layouts and bring them back instantly. Built natively for Apple Silicon, and free.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/kouathao/quadrant-app/releases/latest/download/Quadrant.dmg">Download Quadrant — Free</a>
+      <a class="btn secondary" href="#support">Buy me a coffee ☕</a>
+    </div>
+    <p class="see"><a href="guide.html">See how it works →</a></p>
+    <p class="fine">macOS 13 Ventura or later · Apple Silicon &amp; Intel · Free</p>
+
+    <div class="demo" aria-hidden="true">
+      <div class="bar"></div>
+      <div class="win" id="win"></div>
+      <div class="keys" id="keys">⌘←</div>
+    </div>
+  </header>
+
+  <section id="features">
+    <h2>Every layout, one keystroke away.</h2>
+    <p class="sub">Stop dragging window edges. Quadrant puts every window exactly where you want it.</p>
+    <div class="features">
+      <div class="card"><h3>Halves, thirds &amp; corners</h3><p>One shortcut per spot. Repeat it to cycle ½, ⅔ and ⅓, plus two-thirds, almost maximize, full height and restore.</p></div>
+      <div class="card"><h3>Drag to snap</h3><p>Drag a window to an edge or corner, see a preview, let go. Drag it away and it returns to its old size.</p></div>
+      <div class="card"><span class="new">New</span><h3>Move from anywhere</h3><p>Hold ⌃⌥ and drag anywhere in a window to move it, or right-drag to resize. No aiming for title bars.</p></div>
+      <div class="card"><span class="new">New</span><h3>Grid picker</h3><p>Press a shortcut, paint the cells you want on a grid, and the window fills them exactly.</p></div>
+      <div class="card"><h3>Layouts &amp; tiling</h3><p>Save where every window is and restore it with one click, or tile every window into a neat grid instantly.</p></div>
+      <div class="card"><span class="new">New</span><h3>App rules</h3><p>Have Slack always open on the right half of your second monitor, automatically.</p></div>
+      <div class="card"><span class="new">New</span><h3>Keyboard-only flow</h3><p>Jump focus to the window on your left or right, and pull up a cheat sheet of every shortcut.</p></div>
+      <div class="card"><h3>Plays nice with your apps</h3><p>Turn Quadrant off in apps that need the same keys, and close or quit apps with one shortcut.</p></div>
+      <div class="card"><span class="new">New</span><h3>Polished &amp; portable</h3><p>Optional gaps between windows, a soft trackpad tap on snap, and settings you can export to any Mac.</p></div>
+    </div>
+    <p class="see" style="text-align:center;margin-top:24px"><a href="guide.html">See every feature in action →</a></p>
+  </section>
+
+  <section id="how-to">
+    <h2>How to use Quadrant</h2>
+    <p class="sub">Up and running in a minute. Everything lives in the menu bar icon.</p>
+
+    <div class="guide">
+      <div class="guide-text">
+        <h3><span class="num">1</span>Get started</h3>
+        <ol>
+          <li>Download Quadrant and drag it into your <b>Applications</b> folder.</li>
+          <li>Open it. If macOS says it <b>can't verify Quadrant</b>, follow the <a href="#unverified">three quick steps below</a>. You only do this once.</li>
+          <li>A setup window walks you through allowing <b>Accessibility</b> access, which macOS requires before any app can move windows.</li>
+          <li>Click <b>Open System Settings</b>, turn Quadrant <b>on</b>, and come back. The setup window confirms when you're done.</li>
+          <li>Look for the <span class="glyph">▦</span> icon in your menu bar. That's Quadrant.</li>
+        </ol>
+
+        <div class="unverified" id="unverified">
+          <h4>If macOS says it can't verify Quadrant</h4>
+          <p class="tip-note">Quadrant is an independent app that isn't registered with Apple yet, so the first time you open it macOS shows a warning. It's safe to open. Here's how:</p>
+
+          <div class="mac-steps">
+            <figure>
+              <div class="mock dialog">
+                <img src="icon.png" alt="">
+                <strong>“Quadrant” Not Opened</strong>
+                <span>Apple could not verify “Quadrant” is free of malware that may harm your Mac or compromise your privacy.</span>
+                <div class="mbtns"><i>Move to Trash</i><i class="hl">Done</i></div>
+              </div>
+              <figcaption><b>1.</b> You'll see this when you first open Quadrant. Click <b>Done</b>. Don't move it to the Trash.</figcaption>
+            </figure>
+
+            <figure>
+              <div class="mock settings">
+                <div class="side"><i></i><i></i><i class="on">Privacy &amp; Security</i><i></i><i></i></div>
+                <div class="pane">
+                  <b>Security</b>
+                  <span>“Quadrant” was blocked to protect your Mac.</span>
+                  <i class="hl">Open Anyway</i>
+                </div>
+              </div>
+              <figcaption><b>2.</b> Open <b>System Settings → Privacy &amp; Security</b>, scroll down to <b>Security</b>, and click <b>Open Anyway</b>.</figcaption>
+            </figure>
+
+            <figure>
+              <div class="mock dialog">
+                <img src="icon.png" alt="">
+                <strong>Open “Quadrant”?</strong>
+                <span>Only open it if you trust where it came from.</span>
+                <div class="mbtns"><i>Done</i><i class="hl">Open Anyway</i></div>
+              </div>
+              <figcaption><b>3.</b> Click <b>Open Anyway</b> and enter your Mac password. From now on Quadrant opens normally.</figcaption>
+            </figure>
+          </div>
+          <p class="tip-note">The exact wording varies a little between macOS versions. If you don't see the Open Anyway button, try opening Quadrant once more first. It only appears for about an hour after a blocked launch.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="guide">
+      <div class="guide-text">
+        <h3><span class="num">2</span>Drag to snap</h3>
+        <ol>
+          <li>Grab any window by its title bar.</li>
+          <li>Drag your cursor all the way to a screen edge or corner.</li>
+          <li>A blue preview shows where the window will go. Let go to snap it.</li>
+        </ol>
+        <p class="tip-note">Changed your mind? Press <kbd>⌥⌘Z</kbd> to undo. You can turn drag-to-snap off in Preferences → Mouse.</p>
+        <p class="tip-note">Seeing two previews? macOS has its own edge tiling. Turn off <b>“Drag windows to screen edges to tile”</b> in System Settings → Desktop &amp; Dock.</p>
+      </div>
+      <div class="zones" aria-label="Snap zones diagram">
+        <div class="z corner tl">Quarter</div><div class="z edge top">Fill screen</div><div class="z corner tr">Quarter</div>
+        <div class="z edge left">Left half</div><div class="z mid">Drag a window<br>to an edge</div><div class="z edge right">Right half</div>
+        <div class="z corner bl">Quarter</div><div class="z blank"></div><div class="z corner br">Quarter</div>
+      </div>
+    </div>
+
+    <div class="guide">
+      <div class="guide-text">
+        <h3><span class="num">3</span>Save and restore layouts</h3>
+        <ol>
+          <li>Arrange your windows the way you like them.</li>
+          <li>Menu bar icon → <b>Layouts</b> → <b>Save Current Layout…</b> and give it a name, like “Coding”.</li>
+          <li>Later, pick it from <b>Layouts</b> and every window jumps back into place.</li>
+        </ol>
+        <p class="tip-note">In Preferences → Layouts you can give each layout its own shortcut, or turn on <b>Auto-restore</b> to apply it whenever the same monitors are connected, like when you dock your laptop.</p>
+      </div>
+    </div>
+
+    <div class="guide">
+      <div class="guide-text">
+        <h3><span class="num">4</span>Turn Quadrant off in specific apps</h3>
+        <ol>
+          <li>Switch to the app, for example your code editor.</li>
+          <li>Click the menu bar icon and choose <b>Disable Shortcuts in “App”</b>.</li>
+        </ol>
+        <p class="tip-note">That app's own shortcuts now work normally whenever it's in front. Manage the list in Preferences → Excluded Apps.</p>
+      </div>
+    </div>
+
+    <div class="guide">
+      <div class="guide-text">
+        <h3><span class="num">5</span>Make the shortcuts yours</h3>
+        <ol>
+          <li>Menu bar icon → <b>Preferences…</b> → <b>Shortcuts</b>.</li>
+          <li>Click any field and press the keys you want. <kbd>Esc</kbd> cancels, <kbd>Delete</kbd> clears.</li>
+        </ol>
+      </div>
+    </div>
+    <p class="see" style="text-align:center;margin-top:28px"><a class="btn secondary" href="guide.html">Full step-by-step guide →</a></p>
+  </section>
+
+  <section id="shortcuts">
+    <h2>Default shortcuts</h2>
+    <p class="sub">Change any of them in Preferences.</p>
+    <div class="shortcuts">
+      <div class="col">
+      <table>
+        <tr><th colspan="2">Halves &amp; corners</th></tr>
+        <tr><td>Left Half</td><td class="k"><kbd>⌘←</kbd></td></tr>
+        <tr><td>Right Half</td><td class="k"><kbd>⌘→</kbd></td></tr>
+        <tr><td>Top Half</td><td class="k"><kbd>⌘↑</kbd></td></tr>
+        <tr><td>Bottom Half</td><td class="k"><kbd>⌘↓</kbd></td></tr>
+        <tr><td>Upper Left</td><td class="k"><kbd>⌃⌘←</kbd></td></tr>
+        <tr><td>Upper Right</td><td class="k"><kbd>⌃⌘→</kbd></td></tr>
+        <tr><td>Lower Left</td><td class="k"><kbd>⌃⌘↓</kbd></td></tr>
+        <tr><td>Lower Right</td><td class="k"><kbd>⌃⌘↑</kbd></td></tr>
+        <tr><td>Center</td><td class="k"><kbd>⌥⌘C</kbd></td></tr>
+      </table>
+      <table>
+        <tr><th colspan="2">Arrange &amp; focus</th></tr>
+        <tr><td>Next / Previous Display</td><td class="k"><kbd>⌃⌥⌘→</kbd> <kbd>⌃⌥⌘←</kbd></td></tr>
+        <tr><td>Grid Picker</td><td class="k"><kbd>⌃⌥⌘G</kbd></td></tr>
+        <tr><td>Tile All Windows</td><td class="k"><kbd>⌃⌥⌘T</kbd></td></tr>
+        <tr><td>Focus Left / Down / Up / Right</td><td class="k"><kbd>⌃⌥⌘ H J K L</kbd></td></tr>
+        <tr><td>Move from anywhere</td><td class="k"><kbd>hold ⌃⌥ + drag</kbd></td></tr>
+      </table>
+      </div>
+      <div class="col">
+      <table>
+        <tr><th colspan="2">Sizes</th></tr>
+        <tr><td>Fullscreen</td><td class="k"><kbd>⌥⌘F</kbd></td></tr>
+        <tr><td>Almost Maximize</td><td class="k"><kbd>⌃⌥↩</kbd></td></tr>
+        <tr><td>Maximize Height</td><td class="k"><kbd>⌃⌥⇧↑</kbd></td></tr>
+        <tr><td>First / Center / Last Third</td><td class="k"><kbd>⌃⌥D</kbd> <kbd>⌃⌥F</kbd> <kbd>⌃⌥G</kbd></td></tr>
+        <tr><td>Next / Previous Third</td><td class="k"><kbd>⌃⌥→</kbd> <kbd>⌃⌥←</kbd></td></tr>
+        <tr><td>First / Last Two-Thirds</td><td class="k"><kbd>⌃⌥E</kbd> <kbd>⌃⌥T</kbd></td></tr>
+        <tr><td>Make Larger / Smaller</td><td class="k"><kbd>⌃⌥⇧→</kbd> <kbd>⌃⌥⇧←</kbd></td></tr>
+        <tr><td>Restore</td><td class="k"><kbd>⌃⌥⌫</kbd></td></tr>
+      </table>
+      <table>
+        <tr><th colspan="2">Everything else</th></tr>
+        <tr><td>Undo</td><td class="k"><kbd>⌥⌘Z</kbd></td></tr>
+        <tr><td>Redo</td><td class="k"><kbd>⌥⇧⌘Z</kbd></td></tr>
+        <tr><td>Close Window</td><td class="k"><kbd>⌃⌥⌘W</kbd></td></tr>
+        <tr><td>Quit App</td><td class="k"><kbd>⌃⌥⌘Q</kbd></td></tr>
+        <tr><td>Cheat Sheet</td><td class="k"><kbd>⌃⌥⌘/</kbd></td></tr>
+      </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="support">
+    <h2>Free. Supported by coffee.</h2>
+    <p class="sub">Quadrant is free to use. If it saves you time, you can buy me a coffee. Scan a code with your phone or tap a button.</p>
+    <div class="tips">
+      <div class="tip">
+        <img src="images/venmo-qr.png" alt="Venmo QR code for @Koua-Thao">
+        <div class="handle">@Koua-Thao</div>
+        <a class="btn primary" href="https://venmo.com/u/Koua-Thao" target="_blank" rel="noopener">Venmo</a>
+      </div>
+      <div class="tip">
+        <img src="images/paypal-qr.png" alt="PayPal QR code for kouathao09">
+        <div class="handle">kouathao09</div>
+        <a class="btn primary" href="https://www.paypal.com/paypalme/kouathao09" target="_blank" rel="noopener">PayPal</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <h2>FAQ</h2>
+    <div style="max-width:720px;margin:0 auto">
+      <details><summary>Why does it need Accessibility access?</summary><p>macOS only lets apps move other apps' windows after you allow them in System Settings → Privacy &amp; Security → Accessibility. Quadrant uses that access only to position windows.</p></details>
+      <details><summary>Does it work on Apple Silicon (M1–M5)?</summary><p>Yes. Quadrant is a native universal app for Apple Silicon and Intel Macs on macOS 13 or later.</p></details>
+      <details><summary>Is it really free?</summary><p>Yes. Every feature, no trial, no account. Tips via Venmo or PayPal are appreciated but never required.</p></details>
+      <details><summary>Dragging a window to the edge shows two previews.</summary><p>That's macOS's built-in tiling running alongside Quadrant. Turn off “Drag windows to screen edges to tile” in System Settings → Desktop &amp; Dock → Windows, or turn off Quadrant's version in Preferences → Mouse.</p></details>
+      <details><summary>⌘← no longer jumps to the start of a line in my editor.</summary><p>Quadrant uses ⌘← for Left Half by default. Exclude your editor (menu bar icon → Disable Shortcuts in “App”) or change the shortcut in Preferences → Shortcuts.</p></details>
+      <details><summary>Will Quit App lose my unsaved work?</summary><p>No. It quits apps the normal way, so they still ask you to save first. It never touches Finder or force-quits anything.</p></details>
+      <details><summary>How does Auto-restore pick a layout?</summary><p>Each layout remembers which monitors were connected when you saved it. When that exact set of monitors is connected again, Quadrant restores the layout marked Auto-restore.</p></details>
+      <details><summary>Where are my layouts and settings stored? Does anything leave my Mac?</summary><p>Nothing leaves your Mac. Your layouts, shortcuts and excluded apps are saved only on your computer, in Quadrant's preferences file. Quadrant has no account, no tracking and never connects to the internet. Layouts include window titles (like document names) so the right window can be restored; they stay private on your Mac. To erase everything, delete Quadrant and run <code>defaults delete com.kouathao.quadrant</code> in Terminal.</p></details>
+      <details><summary>Holding ⌃⌥ and dragging clashes with another app.</summary><p>Move &amp; resize from anywhere uses ⌃⌥ by default. Pick different keys or turn it off in Preferences → Mouse. You can also add that app to Excluded Apps.</p></details>
+      <details><summary>How do I use the grid picker?</summary><p>Press ⌃⌥⌘G. A 6 × 4 grid covers the screen your window is on. Drag across the cells you want (or click one) and the window fills them. Press Esc to cancel.</p></details>
+      <details><summary>Shortcuts stopped working.</summary><p>Open System Settings → Privacy &amp; Security → Accessibility, remove Quadrant with the − button, then add it back (or reopen Quadrant and follow the setup window).</p></details>
+      <details><summary>How do I start it at login?</summary><p>It's on by default. Toggle it from the menu bar icon or in Preferences.</p></details>
+    </div>
+  </section>
+
+  <footer>© 2026 Quadrant · <a href="mailto:support@quadrantapp.com">support@quadrantapp.com</a></footer>
+</div>
+
+<script>
+  // Window-snapping demo loop
+  const steps = [
+    { k: "⌘←", s: { left: "2%", top: "8%", width: "47%", height: "88%" } },
+    { k: "⌘→", s: { left: "51%", top: "8%", width: "47%", height: "88%" } },
+    { k: "⌃⌘←", s: { left: "2%", top: "8%", width: "47%", height: "42%" } },
+    { k: "⌃⌘↑", s: { left: "51%", top: "54%", width: "47%", height: "42%" } },
+    { k: "⌃⌥→", s: { left: "34.6%", top: "8%", width: "30.6%", height: "88%" } },
+    { k: "⌥⌘F", s: { left: "2%", top: "8%", width: "96%", height: "88%" } },
+    { k: "⌥⌘C", s: { left: "25%", top: "22%", width: "50%", height: "60%" } },
+  ];
+  const win = document.getElementById("win"), keys = document.getElementById("keys");
+  let i = 0;
+  function step() {
+    const { k, s } = steps[i++ % steps.length];
+    keys.textContent = k;
+    Object.assign(win.style, s);
+  }
+  step();
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(step, 1600);
+</script>
+</body>
+</html>

@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quadrant Guide — How to use Quadrant</title>
+<meta name="description" content="Step-by-step guide to Quadrant: keyboard snapping, drag to snap, move from anywhere, grid picker, layouts and more, with short animations.">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbfbfd; --surface: #ffffff; --text: #1d1d1f; --muted: #6e6e73; --line: #e5e5ea;
+    --accent: #4f5bf7; --accent-2: #19a0fa; --key-bg: #f2f2f7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0d0d12; --surface: #17171f; --text: #f5f5f7; --muted: #a1a1aa; --line: #2a2a35; --key-bg: #23232e; }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; font-family: Inter, -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.55; }
+  a { color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+  nav.top { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; text-decoration: none; }
+  .brand img { width: 32px; height: 32px; }
+  nav.top .links a { margin-left: 22px; color: var(--muted); text-decoration: none; font-size: 15px; }
+  nav.top .links a:hover, nav.top .links a.active { color: var(--text); }
+  nav.top .links a.active { font-weight: 600; }
+
+  .intro { text-align: center; padding: 36px 0 28px; }
+  h1 { font-size: clamp(32px, 5vw, 50px); line-height: 1.08; letter-spacing: -0.03em; margin: 0 0 12px; font-weight: 800; }
+  h1 span { background: linear-gradient(100deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lede { font-size: 18px; color: var(--muted); max-width: 620px; margin: 0 auto; }
+
+  .layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 36px; align-items: start; padding-bottom: 40px; }
+
+  /* Topic nav: sticky sidebar on desktop, chip row on mobile */
+  .toc { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 4px; }
+  .toc .lvl { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 14px 0 4px 10px; }
+  .toc .lvl:first-child { margin-top: 0; }
+  .toc a { text-decoration: none; font-size: 14px; padding: 6px 10px; border-radius: 8px; color: var(--muted); }
+  .toc a:hover { color: var(--text); background: var(--key-bg); }
+  .toc a.on { color: var(--text); background: var(--key-bg); font-weight: 600; }
+
+  .level { margin-bottom: 18px; }
+  .level-head { display: flex; align-items: baseline; gap: 12px; margin: 26px 0 16px; }
+  .level-head:first-child { margin-top: 0; }
+  .level-head h2 { font-size: 26px; letter-spacing: -0.02em; margin: 0; }
+  .pill { font-size: 12px; font-weight: 700; color: #fff; padding: 3px 10px; border-radius: 99px; background: linear-gradient(100deg, var(--accent), var(--accent-2)); white-space: nowrap; }
+  .level-head p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  .topic { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 28px; align-items: center;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 26px; margin-bottom: 16px; scroll-margin-top: 16px; }
+  .topic h3 { margin: 0 0 6px; font-size: 20px; letter-spacing: -0.01em; }
+  .topic .what { margin: 0 0 14px; color: var(--muted); font-size: 15px; }
+  .topic ol { margin: 0; padding-left: 22px; }
+  .topic li { margin: 6px 0; font-size: 15px; }
+  .keys-row { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; margin-top: 14px; font-size: 13px; color: var(--muted); }
+  kbd { font-family: inherit; background: var(--key-bg); border: 1px solid var(--line); border-radius: 7px; padding: 2px 8px; font-size: 13px; color: var(--text); white-space: nowrap; }
+  .note { color: var(--muted); font-size: 13px; margin: 12px 0 0; }
+
+  /* ---------- Scene (mini desktop animation) ---------- */
+  .scene { position: relative; width: 100%; aspect-ratio: 16 / 10; border-radius: 14px; overflow: hidden;
+    background: linear-gradient(160deg, #2b2d6e, #0f5f9c); box-shadow: 0 16px 40px rgba(0,0,0,.16); user-select: none; }
+  .scene .menubar { position: absolute; inset: 0 0 auto 0; height: 7%; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: flex-end; padding-right: 3%; gap: 4%; }
+  .scene .menubar i { width: 5%; height: 34%; border-radius: 3px; background: rgba(255,255,255,.45); }
+  .scene .menubar b { color: #fff; font-size: 11px; line-height: 1; }
+  .scene.moving * { transition: left .6s cubic-bezier(.2,.8,.2,1), top .6s cubic-bezier(.2,.8,.2,1), width .6s cubic-bezier(.2,.8,.2,1), height .6s cubic-bezier(.2,.8,.2,1), opacity .3s, transform .2s; }
+  .scene.instant * { transition: none !important; }
+  .scene .obj { position: absolute; }
+  .scene .win { background: rgba(255,255,255,.95); border-radius: 7px; box-shadow: 0 6px 18px rgba(0,0,0,.28); overflow: hidden; }
+  .scene .win .tb { height: 12px; background: #e9e9ef; display: flex; align-items: center; gap: 3px; padding-left: 5px; }
+  .scene .win .tb span { width: 5px; height: 5px; border-radius: 50%; background: #ff5f57; }
+  .scene .win .tb span:nth-child(2) { background: #febc2e; }
+  .scene .win .tb span:nth-child(3) { background: #28c840; }
+  .scene .win .tb em { font-style: normal; font-size: 8px; color: #555; margin-left: 4px; white-space: nowrap; overflow: hidden; }
+  .scene .win .body { position: absolute; inset: 12px 0 0 0; background: repeating-linear-gradient(#fff 0 6px, #eef0f5 6px 9px); background-position: 0 6px; opacity: .9; }
+  .scene .win.t2 .tb { background: #dfe7ff; } .scene .win.t3 .tb { background: #dff3ea; } .scene .win.t4 .tb { background: #fbe6d8; }
+  .scene .win.focus { box-shadow: 0 0 0 2px #ffd34d, 0 8px 22px rgba(0,0,0,.35); }
+  .scene .hidden { opacity: 0; pointer-events: none; }
+  .scene .box { color: #1d1d1f; font-size: 9px; line-height: 1.35; }
+  .scene .menu { background: rgba(250,250,252,.97); border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,.3); padding: 4px; }
+  .scene .menu div { display: flex; justify-content: space-between; padding: 2px 6px; border-radius: 4px; gap: 6px; white-space: nowrap; }
+  .scene .menu div.hl { background: var(--accent); color: #fff; }
+  .scene .menu hr { border: 0; border-top: 1px solid #ddd; margin: 3px 4px; }
+  .scene .panel { background: rgba(250,250,252,.97); border-radius: 8px; box-shadow: 0 10px 28px rgba(0,0,0,.35); padding: 8px 10px; }
+  .scene .panel h5 { margin: 0 0 4px; font-size: 10px; }
+  .scene .panel .row { display: flex; justify-content: space-between; gap: 8px; white-space: nowrap; }
+  .scene .panel .btnx { display: inline-block; margin-top: 4px; padding: 2px 8px; border-radius: 4px; background: var(--accent); color: #fff; }
+  .scene .tag { background: rgba(0,0,0,.6); color: #fff; border-radius: 6px; padding: 3px 7px; font-size: 9px; font-weight: 600; white-space: nowrap; text-align: center; }
+  .scene .caret { background: var(--accent); border-radius: 1px; }
+  .scene .file { display: grid; place-items: center; background: #fff; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,.3); font-size: 8px; font-weight: 700; color: var(--accent); }
+  .scene .preview { position: absolute; border-radius: 8px; border: 2px solid rgba(120,170,255,.95); background: rgba(79,91,247,.28); opacity: 0; }
+  .scene .preview.show { opacity: 1; }
+  .scene .grid { position: absolute; left: 1.5%; top: 9%; width: 97%; height: 89.5%; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(4, 1fr); gap: 3px; opacity: 0; }
+  .scene .grid.show { opacity: 1; }
+  .scene .grid i { border-radius: 4px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.35); }
+  .scene .grid i.sel { background: rgba(79,91,247,.55); border-color: #fff; }
+  .scene .cursor { position: absolute; width: 16px; height: 22px; margin: -2px 0 0 -2px; z-index: 50; filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
+  .scene .cursor.down { transform: scale(.85); }
+  .scene .keys { position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%); z-index: 60; background: rgba(0,0,0,.6); color: #fff;
+    padding: 5px 12px; border-radius: 9px; font-size: 15px; font-weight: 600; letter-spacing: .04em; white-space: nowrap; opacity: 0; backdrop-filter: blur(6px); }
+  .scene .keys.show { opacity: 1; }
+  .scene .ripple { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; border: 2px solid #fff; z-index: 49; animation: ripple .6s ease-out forwards; }
+  @keyframes ripple { from { transform: scale(.2); opacity: 1; } to { transform: scale(1.4); opacity: 0; } }
+
+  footer { padding: 40px 0 60px; text-align: center; color: var(--muted); font-size: 14px; }
+  .next { text-align: center; margin: 30px 0 10px; }
+  .btn { display: inline-block; padding: 12px 22px; border-radius: 12px; font-weight: 600; text-decoration: none; font-size: 15px; }
+  .btn.primary { background: linear-gradient(100deg, var(--accent), var(--accent-2)); color: #fff; box-shadow: 0 8px 24px rgba(79,91,247,.3); }
+  .btn.secondary { background: var(--surface); border: 1px solid var(--line); margin-left: 8px; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .toc { position: sticky; top: 0; z-index: 20; flex-direction: row; overflow-x: auto; gap: 6px; padding: 10px 0;
+      background: var(--bg); border-bottom: 1px solid var(--line); margin-bottom: 18px; scrollbar-width: none; }
+    .toc::-webkit-scrollbar { display: none; }
+    .toc .lvl { display: none; }
+    .toc a { flex: none; border: 1px solid var(--line); border-radius: 99px; padding: 5px 12px; background: var(--surface); font-size: 13px; }
+    .toc a.on { background: var(--text); color: var(--bg); border-color: var(--text); }
+    .topic { grid-template-columns: minmax(0, 1fr); scroll-margin-top: 70px; }
+    .topic .scene { order: -1; }
+  }
+  @media (max-width: 680px) {
+    nav.top .links a:not(.buy) { display: none; }
+    .topic { padding: 20px; }
+    .level-head { flex-wrap: wrap; }
+    .btn.secondary { margin: 10px 0 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="top">
+    <a class="brand" href="index.html"><img src="icon.png" alt="">Quadrant</a>
+    <div class="links">
+      <a href="index.html#features">Features</a>
+      <a class="active" href="guide.html" aria-current="page">Guide</a>
+      <a href="index.html#shortcuts">Shortcuts</a>
+      <a href="index.html#faq">FAQ</a>
+      <a class="buy" href="index.html#support">Support ☕</a>
+    </div>
+  </nav>
+
+  <header class="intro">
+    <h1>How to use <span>Quadrant</span></h1>
+    <p class="lede">Short, animated how-tos. Start with the basics; everything else is optional and there when you want it.</p>
+  </header>
+
+  <div class="layout">
+    <aside class="toc" aria-label="Topics">
+      <div class="lvl">Basics</div>
+      <a href="#start">Getting started</a>
+      <a href="#keyboard">Snap with keys</a>
+      <a href="#drag">Drag to snap</a>
+      <a href="#sizes">More sizes</a>
+      <a href="#undo">Undo</a>
+      <div class="lvl">Mouse tricks</div>
+      <a href="#anywhere">Move from anywhere</a>
+      <a href="#grid">Grid picker</a>
+      <div class="lvl">Power features</div>
+      <a href="#layouts">Saved layouts</a>
+      <a href="#tile">Tile all windows</a>
+      <a href="#rules">App rules</a>
+      <a href="#focus">Focus by direction</a>
+      <a href="#cheatsheet">Cheat sheet</a>
+      <a href="#excluded">Excluded apps</a>
+      <a href="#gaps">Gaps &amp; feedback</a>
+      <a href="#import">Import &amp; export</a>
+    </aside>
+
+    <main>
+      <!-- ============ BASICS ============ -->
+      <div class="level">
+        <div class="level-head"><span class="pill">Level 1</span><h2>Basics</h2><p>All most people ever need.</p></div>
+
+        <article class="topic" id="start">
+          <div>
+            <h3>Getting started</h3>
+            <p class="what">Install once, allow one permission, and Quadrant lives in your menu bar.</p>
+            <ol>
+              <li>Download Quadrant and drag it into <b>Applications</b>.</li>
+              <li>Open it. If macOS says it can't verify Quadrant, <a href="index.html#unverified">follow these 3 steps</a>.</li>
+              <li>The setup window asks for <b>Accessibility</b> access. Click Open System Settings and turn Quadrant on.</li>
+              <li>Click the <b>▦</b> icon in the menu bar for every action.</li>
+            </ol>
+          </div>
+          <div class="scene" data-scene="start" role="img" aria-label="Animation: clicking the Quadrant menu bar icon and choosing Left Half"></div>
+        </article>
+
+        <article class="topic" id="keyboard">
+          <div>
+            <h3>Snap with the keyboard</h3>
+            <p class="what">One shortcut sends the front window to a half or a corner.</p>
+            <ol>
+              <li>Click the window you want to move.</li>
+              <li>Press <kbd>⌘←</kbd> for the left half. Arrows pick the side.</li>
+              <li>Press it again to cycle the width: ½ → ⅔ → ⅓.</li>
+              <li>Corners use <kbd>⌃⌘</kbd> plus an arrow.</li>
+            </ol>
+            <div class="keys-row">Halves <kbd>⌘←</kbd><kbd>⌘→</kbd><kbd>⌘↑</kbd><kbd>⌘↓</kbd> Corners <kbd>⌃⌘←</kbd><kbd>⌃⌘→</kbd><kbd>⌃⌘↑</kbd><kbd>⌃⌘↓</kbd></div>
+          </div>
+          <div class="scene" data-scene="keyboard" role="img" aria-label="Animation: pressing Command Left Arrow repeatedly cycles the window width, then a corner shortcut"></div>
+        </article>
+
+        <article class="topic" id="drag">
+          <div>
+            <h3>Drag to snap</h3>
+            <p class="what">Drag a window to a screen edge or corner and let go.</p>
+            <ol>
+              <li>Grab the window by its title bar.</li>
+              <li>Drag the cursor all the way to an edge or corner. A blue preview appears.</li>
+              <li>Let go to snap. Sides give halves, the top fills the screen, corners give quarters.</li>
+              <li>Drag it away from the edge and it returns to its original size.</li>
+            </ol>
+            <p class="note">Turn it on or off in Preferences → Mouse.</p>
+          </div>
+          <div class="scene" data-scene="drag" role="img" aria-label="Animation: dragging a window to the left edge shows a preview and snaps it, then dragging it away restores its size"></div>
+        </article>
+
+        <article class="topic" id="sizes">
+          <div>
+            <h3>More sizes</h3>
+            <p class="what">Thirds, two-thirds, almost-full and full-height, plus a way back.</p>
+            <ol>
+              <li><b>Two-thirds:</b> <kbd>⌃⌥E</kbd> left, <kbd>⌃⌥T</kbd> right.</li>
+              <li><b>Thirds:</b> <kbd>⌃⌥D</kbd> <kbd>⌃⌥F</kbd> <kbd>⌃⌥G</kbd> for left, center, right, or <kbd>⌃⌥→</kbd> / <kbd>⌃⌥←</kbd> to step through them.</li>
+              <li><b>Almost maximize</b> <kbd>⌃⌥↩</kbd> or <b>maximize height</b> <kbd>⌃⌥⇧↑</kbd>.</li>
+              <li><b>Restore</b> <kbd>⌃⌥⌫</kbd> puts the window back to its size before Quadrant touched it.</li>
+            </ol>
+          </div>
+          <div class="scene" data-scene="sizes" role="img" aria-label="Animation: a window changes to two-thirds, almost maximized, full height, then restored"></div>
+        </article>
+
+        <article class="topic" id="undo">
+          <div>
+            <h3>Undo</h3>
+            <p class="what">Moved the wrong window? Put it right back.</p>
+            <ol>
+              <li>Press <kbd>⌥⌘Z</kbd> to undo the last move.</li>
+              <li>Press <kbd>⌥⇧⌘Z</kbd> to redo it.</li>
+              <li>Tile All and layout restores undo in one step, for every window at once.</li>
+            </ol>
+          </div>
+          <div class="scene" data-scene="undo" role="img" aria-label="Animation: a window snaps to the right half, then undo returns it to where it was"></div>
+        </article>
+      </div>
+
+      <!-- ============ MOUSE TRICKS ============ -->
+      <div class="level">
+        <div class="level-head"><span class="pill">Level 2</span><h2>Mouse tricks</h2><p>Faster than aiming for title bars.</p></div>
+
+        <article class="topic" id="anywhere">
+          <div>
+            <h3>Move &amp; resize from anywhere</h3>
+            <p class="what">Hold two keys and drag from anywhere inside a window.</p>
+            <ol>
+              <li>Hold <kbd>⌃⌥</kbd> and drag anywhere in a window to <b>move</b> it.</li>
+              <li>Hold <kbd>⌃⌥</kbd> and <b>right-drag</b> to <b>resize</b> it. On a trackpad, click with two fingers and drag.</li>
+              <li>Change the keys or turn it off in Preferences → Mouse.</li>
+            </ol>
+          </div>
+          <div class="scene" data-scene="anywhere" role="img" aria-label="Animation: holding Control Option and dragging from the middle of a window moves it, then right-dragging resizes it"></div>
+        </article>
+
+        <article class="topic" id="grid">
+          <div>
+            <h3>Grid picker</h3>
+            <p class="what">Paint the exact area a window should fill.</p>
+            <ol>
+              <li>Press <kbd>⌃⌥⌘G</kbd>. A 6 × 4 grid appears over the screen.</li>
+              <li>Drag across the cells you want (or click just one).</li>
+              <li>Let go and the window fills them. <kbd>Esc</kbd> cancels.</li>
+            </ol>
+          </div>
+          <div class="scene" data-scene="grid" role="img" aria-label="Animation: a grid appears, cells are selected by dragging, and the window fills the selection"></div>
+        </article>
+      </div>
+
+      <!-- ============ POWER FEATURES ============ -->
+      <div class="level">
+        <div class="level-head"><span class="pill">Level 3</span><h2>Power features</h2><p>Set up once, use every day.</p></div>
+
+        <article class="topic" id="layouts">
+          <div>
+            <h3>Saved layouts</h3>
+            <p class="what">Save where every window is, and bring it all back in one click.</p>
+            <ol>
+              <li>Arrange your windows the way you like.</li>
+              <li><b>▦</b> → <b>Layouts</b> → <b>Save Current Layout…</b> and name it.</li>
+              <li>Pick it from <b>Layouts</b> later and every window jumps back.</li>
+            </ol>
+            <p class="note">In Preferences → Layouts, give a layout its own shortcut or turn on <b>Auto-restore</b> for when you plug in the same monitors.</p>
+          </div>
+          <div class="scene" data-scene="layouts" role="img" aria-label="Animation: choosing a saved layout from the menu moves three messy windows into place"></div>
+        </article>
+
+        <article class="topic" id="tile">
+          <div>
+            <h3>Tile all windows</h3>
+            <p class="what">Turn a messy screen into a neat grid.</p>
+            <ol>
+              <li>Press <kbd>⌃⌥⌘T</kbd>.</li>
+              <li>Every visible window on that display is arranged side by side.</li>
+              <li>Didn't like it? <kbd>⌥⌘Z</kbd> puts them all back.</li>
+            </ol>
+          </div>
+          <div class="scene" data-scene="tile" role="img" aria-label="Animation: four overlapping windows are tiled into a two by two grid"></div>
+        </article>
+
+        <article class="topic" id="rules">
+          <div>
+            <h3>App rules</h3>
+            <p class="what">Make an app open in the same spot every time.</p>
+            <ol>
+              <li>Preferences → <b>App Rules</b> → <b>Add App</b>.</li>
+              <li>Choose a position, like <b>Right Half</b>, and a display.</li>
+              <li>Next time that app opens, Quadrant moves it there.</li>
+            </ol>
+          </div>
+          <div class="scene" data-scene="rules" role="img" aria-label="Animation: an app opens in the middle of the screen and is moved to the right half automatically"></div>
+        </article>
+
+        <article class="topic" id="focus">
+          <div>
+            <h3>Focus by direction</h3>
+            <p class="what">Jump to the window on your left, right, above or below, without the mouse.</p>
+            <ol>
+              <li>Hold <kbd>⌃⌥⌘</kbd> and press <b>H J K L</b> for left, down, up, right.</li>
+              <li>The nearest window in that direction comes to the front.</li>
+            </ol>
+            <div class="keys-row">Left <kbd>⌃⌥⌘H</kbd> Down <kbd>⌃⌥⌘J</kbd> Up <kbd>⌃⌥⌘K</kbd> Right <kbd>⌃⌥⌘L</kbd></div>
+          </div>
+          <div class="scene" data-scene="focus" role="img" aria-label="Animation: the highlighted window moves left, right and down as arrow shortcuts are pressed"></div>
+        </article>
+
+        <article class="topic" id="cheatsheet">
+          <div>
+            <h3>Cheat sheet</h3>
+            <p class="what">Forgot a shortcut? See them all at a glance.</p>
+            <ol>
+              <li>Press <kbd>⌃⌥⌘/</kbd>.</li>
+              <li>An overlay lists every Quadrant shortcut.</li>
+              <li>Press any key or <kbd>Esc</kbd> to close it.</li>
+            </ol>
+          </div>
+          <div class="scene" data-scene="cheatsheet" role="img" aria-label="Animation: an overlay listing shortcuts appears and then closes"></div>
+        </article>
+
+        <article class="topic" id="excluded">
+          <div>
+            <h3>Excluded apps</h3>
+            <p class="what">Let an app keep its own shortcuts, like ⌘← in a code editor.</p>
+            <ol>
+              <li>Switch to the app.</li>
+              <li><b>▦</b> → <b>Disable Shortcuts in “App”</b>.</li>
+              <li>Now <kbd>⌘←</kbd> goes to the app, not Quadrant. Manage the list in Preferences → Excluded Apps.</li>
+            </ol>
+          </div>
+          <div class="scene" data-scene="excluded" role="img" aria-label="Animation: in an excluded editor, Command Left Arrow moves the text cursor instead of the window"></div>
+        </article>
+
+        <article class="topic" id="gaps">
+          <div>
+            <h3>Gaps &amp; snap feedback</h3>
+            <p class="what">Add breathing room between windows, and feel each snap.</p>
+            <ol>
+              <li>Preferences → <b>General</b> → drag the <b>Window gaps</b> slider.</li>
+              <li>Preferences → <b>Mouse</b> → <b>Snap feedback</b> gives a light trackpad tap when a drag reaches a snap zone.</li>
+            </ol>
+          </div>
+          <div class="scene" data-scene="gaps" role="img" aria-label="Animation: two snapped windows gain space between them and the screen edges"></div>
+        </article>
+
+        <article class="topic" id="import">
+          <div>
+            <h3>Import &amp; export settings</h3>
+            <p class="what">Take your setup to another Mac or share it with a friend.</p>
+            <ol>
+              <li>Preferences → <b>General</b> → <b>Export Settings…</b> saves one file with your shortcuts, layouts, app rules and excluded apps.</li>
+              <li>On the other Mac, choose <b>Import Settings…</b> and pick that file.</li>
+            </ol>
+          </div>
+          <div class="scene" data-scene="import" role="img" aria-label="Animation: clicking Export Settings saves a settings file"></div>
+        </article>
+      </div>
+
+      <div class="next">
+        <a class="btn primary" href="https://github.com/kouathao/quadrant-app/releases/latest/download/Quadrant.dmg">Download Quadrant — Free</a>
+        <a class="btn secondary" href="index.html#shortcuts">All shortcuts</a>
+      </div>
+    </main>
+  </div>
+
+  <footer>© 2026 Quadrant · <a href="mailto:support@quadrantapp.com">support@quadrantapp.com</a></footer>
+</div>
+
+<script>
+/* ------------------------------------------------------------------
+   Tiny scene engine. Each scene is a set of objects plus a timeline.
+   Coordinates are percentages of the mini desktop. A step can combine:
+     cursor:[x,y]          move the pointer
+     drag:'id'             move object 'id' along with the pointer
+     rdrag:'id'            resize object 'id' along with the pointer
+     set:{id:[x,y,w,h]}    move/resize objects
+     show:'id' / hide:'id' (string or array)
+     focus:'id'            highlight a window
+     keys:'⌘←' / ''        show / hide the key badge
+     preview:[x,y,w,h]/null translucent snap preview
+     grid:true/false, gridSel:[c0,r0,c1,r1]/null
+     down:true/false       mouse button pressed look
+     tap:true              ripple at the pointer (snap feedback)
+     wait:ms               how long to hold after this step (default 750)
+   ------------------------------------------------------------------ */
+(() => {
+  // Usable desktop area (below the menu bar).
+  const X0 = 1.5, Y0 = 9, W = 97, H = 89.5;
+  const R = (fx, fy, fw, fh, gap = 0) => [X0 + fx * W + gap, Y0 + fy * H + gap, fw * W - gap * 2, fh * H - gap * 2];
+  const MENU_ICON = [91.5, 3.5];
+
+  const win = (rect, title, tint, extra = {}) => ({ type: 'win', rect, title, tint, ...extra });
+  const box = (rect, cls, html, extra = {}) => ({ type: 'box', rect, cls, html, ...extra });
+
+  const SCENES = {
+    start: {
+      cursor: [55, 60],
+      objs: {
+        a: win([28, 28, 44, 50], 'Notes', 1),
+        menu: box([60, 7.5, 37, 46], 'menu', '<div>Left Half<span>⌘←</span></div><div>Right Half<span>⌘→</span></div><div>Top Half<span>⌘↑</span></div><hr><div>Layouts<span>›</span></div><div>Preferences…<span>⌘,</span></div>', { hidden: true }),
+      },
+      steps: [
+        { cursor: MENU_ICON },
+        { down: true, wait: 150 },
+        { down: false, show: 'menu' },
+        { cursor: [72, 12.5], wait: 500 },
+        { menuHl: ['menu', 0], wait: 500 },
+        { down: true, wait: 150 },
+        { down: false, hide: 'menu', menuHl: ['menu', -1], set: { a: R(0, 0, .5, 1) }, wait: 1400 },
+      ],
+    },
+
+    keyboard: {
+      objs: { a: win([30, 26, 40, 50], 'Notes', 1) },
+      steps: [
+        { keys: '⌘←', set: { a: R(0, 0, 1 / 2, 1) } },
+        { keys: '⌘← again  ·  ⅔', set: { a: R(0, 0, 2 / 3, 1) } },
+        { keys: '⌘← again  ·  ⅓', set: { a: R(0, 0, 1 / 3, 1) } },
+        { keys: '⌘→', set: { a: R(.5, 0, .5, 1) } },
+        { keys: '⌃⌘→  ·  corner', set: { a: R(.5, 0, .5, .5) }, wait: 1300 },
+      ],
+    },
+
+    drag: {
+      cursor: [62, 70],
+      objs: { a: win([36, 30, 36, 44], 'Safari', 2) },
+      steps: [
+        { cursor: [50, 32], wait: 500 },
+        { down: true, wait: 200 },
+        { drag: 'a', cursor: [1, 50], preview: R(0, 0, .5, 1), wait: 900 },
+        { down: false, preview: null, set: { a: R(0, 0, .5, 1) }, wait: 1000 },
+        { cursor: [24, 12], wait: 400 },
+        { down: true, wait: 200 },
+        { drag: 'a', cursor: [58, 30], set: { a: [40, 27, 36, 44] }, wait: 500 },
+        { down: false, wait: 1200 },
+      ],
+    },
+
+    sizes: {
+      objs: { a: win([32, 30, 36, 44], 'Pages', 3) },
+      steps: [
+        { keys: '⌃⌥E  ·  two-thirds', set: { a: R(0, 0, 2 / 3, 1) } },
+        { keys: '⌃⌥F  ·  center third', set: { a: R(1 / 3, 0, 1 / 3, 1) } },
+        { keys: '⌃⌥↩  ·  almost maximize', set: { a: R(.05, .05, .9, .9) } },
+        { keys: '⌃⌥⇧↑  ·  maximize height', set: { a: R(.32, 0, .36, 1) } },
+        { keys: '⌃⌥⌫  ·  restore', set: { a: [32, 30, 36, 44] }, wait: 1300 },
+      ],
+    },
+
+    undo: {
+      objs: { a: win([18, 22, 40, 52], 'Mail', 2) },
+      steps: [
+        { wait: 400 },
+        { keys: '⌘→', set: { a: R(.5, 0, .5, 1) }, wait: 1000 },
+        { keys: '⌥⌘Z  ·  undo', set: { a: [18, 22, 40, 52] }, wait: 1000 },
+        { keys: '⌥⇧⌘Z  ·  redo', set: { a: R(.5, 0, .5, 1) }, wait: 1300 },
+      ],
+    },
+
+    anywhere: {
+      cursor: [70, 80],
+      objs: { a: win([22, 24, 40, 48], 'Notes', 1) },
+      steps: [
+        { cursor: [42, 52], wait: 500 },
+        { keys: 'hold ⌃⌥', down: true, wait: 400 },
+        { drag: 'a', cursor: [72, 58], wait: 800 },
+        { down: false, keys: 'hold ⌃⌥ + right-drag', wait: 500 },
+        { cursor: [90, 85], wait: 300 },
+        { down: true, wait: 200 },
+        { rdrag: 'a', cursor: [80, 70], wait: 800 },
+        { down: false, keys: '', wait: 1100 },
+      ],
+    },
+
+    grid: {
+      cursor: [80, 80],
+      objs: { a: win([30, 30, 34, 40], 'Figma', 4) },
+      steps: [
+        { keys: '⌃⌥⌘G', grid: true, wait: 700 },
+        { cursor: [26, 20], gridSel: [1, 0, 1, 0], wait: 400 },
+        { down: true, wait: 150 },
+        { cursor: [72, 70], gridSel: [1, 0, 4, 2], wait: 900 },
+        { down: false, grid: false, gridSel: null, keys: '', set: { a: R(1 / 6, 0, 4 / 6, 3 / 4) }, wait: 1400 },
+      ],
+    },
+
+    layouts: {
+      cursor: [50, 85],
+      objs: {
+        a: win([8, 20, 40, 42], 'Code', 1),
+        b: win([40, 34, 36, 40], 'Safari', 2),
+        c: win([22, 50, 34, 36], 'Slack', 3),
+        menu: box([54, 7.5, 43, 36], 'menu', '<div>Coding<span>⌃⌥1</span></div><div>Meetings<span>⌃⌥2</span></div><hr><div>Save Current Layout…</div>', { hidden: true }),
+      },
+      steps: [
+        { cursor: MENU_ICON, wait: 600 },
+        { down: true, wait: 150 },
+        { down: false, show: 'menu', wait: 500 },
+        { cursor: [70, 12.5], menuHl: ['menu', 0], wait: 600 },
+        { hide: 'menu', menuHl: ['menu', -1], set: { a: R(0, 0, .5, 1, .6), b: R(.5, 0, .5, .5, .6), c: R(.5, .5, .5, .5, .6) }, wait: 1500 },
+      ],
+    },
+
+    tile: {
+      objs: {
+        a: win([10, 14, 42, 46], 'Code', 1),
+        b: win([30, 26, 40, 44], 'Safari', 2),
+        c: win([46, 40, 38, 42], 'Slack', 3),
+        d: win([20, 48, 34, 40], 'Music', 4),
+      },
+      steps: [
+        { wait: 600 },
+        { keys: '⌃⌥⌘T', set: { a: R(0, 0, .5, .5, .6), b: R(.5, 0, .5, .5, .6), c: R(0, .5, .5, .5, .6), d: R(.5, .5, .5, .5, .6) }, wait: 1400 },
+        { keys: '⌥⌘Z  ·  undo', set: { a: [10, 14, 42, 46], b: [30, 26, 40, 44], c: [46, 40, 38, 42], d: [20, 48, 34, 40] }, wait: 1200 },
+      ],
+    },
+
+    rules: {
+      objs: {
+        a: win([6, 16, 44, 70], 'Code', 1),
+        b: win([38, 38, 26, 30], 'Slack', 3, { hidden: true }),
+        tag: box([60, 30, 34, 8], 'tag', 'Rule: Slack → Right Half', { hidden: true }),
+      },
+      steps: [
+        { wait: 500 },
+        { show: 'b', keys: 'Slack opens…', wait: 800 },
+        { show: 'tag', set: { b: R(.5, 0, .5, 1) }, keys: 'moved by its rule', wait: 1300 },
+        { hide: 'tag', keys: '', wait: 900 },
+      ],
+    },
+
+    focus: {
+      objs: {
+        a: win(R(0, 0, .5, 1, .6), 'Code', 1),
+        b: win(R(.5, 0, .5, .5, .6), 'Safari', 2),
+        c: win(R(.5, .5, .5, .5, .6), 'Slack', 3),
+      },
+      steps: [
+        { focus: 'a', wait: 700 },
+        { keys: '⌃⌥⌘L  ·  right', focus: 'b' },
+        { keys: '⌃⌥⌘J  ·  down', focus: 'c' },
+        { keys: '⌃⌥⌘H  ·  left', focus: 'a', wait: 1200 },
+      ],
+    },
+
+    cheatsheet: {
+      objs: {
+        a: win(R(0, 0, .5, 1, .6), 'Code', 1),
+        b: win(R(.5, 0, .5, 1, .6), 'Safari', 2),
+        sheet: box([18, 16, 64, 68], 'panel', '<h5>Quadrant shortcuts</h5><div class="row"><span>Left / Right Half</span><span>⌘← ⌘→</span></div><div class="row"><span>Corners</span><span>⌃⌘ + arrow</span></div><div class="row"><span>Almost Maximize</span><span>⌃⌥↩</span></div><div class="row"><span>Grid Picker</span><span>⌃⌥⌘G</span></div><div class="row"><span>Tile All</span><span>⌃⌥⌘T</span></div><div class="row"><span>Undo</span><span>⌥⌘Z</span></div>', { hidden: true }),
+      },
+      steps: [
+        { wait: 600 },
+        { keys: '⌃⌥⌘/', show: 'sheet', wait: 2000 },
+        { keys: 'esc', hide: 'sheet', wait: 900 },
+        { keys: '', wait: 500 },
+      ],
+    },
+
+    excluded: {
+      objs: {
+        a: win(R(.08, .06, .84, .86), 'Editor (excluded)', 1),
+        tag: box([30, 72, 40, 8], 'tag', 'Shortcuts off in this app', {}),
+        caret: box([80, 46, .8, 5], 'caret', ''),
+      },
+      steps: [
+        { wait: 600 },
+        { keys: '⌘←', set: { caret: [12, 46, .8, 5] }, wait: 1200 },
+        { keys: '⌘→', set: { caret: [80, 46, .8, 5] }, wait: 1200 },
+        { keys: '', wait: 500 },
+      ],
+    },
+
+    gaps: {
+      cursor: [50, 60],
+      objs: {
+        a: win(R(0, 0, .5, 1), 'Code', 1),
+        b: win(R(.5, 0, .5, 1), 'Safari', 2),
+        tag: box([36, 44, 28, 9], 'tag', 'Window gaps: 0', {}),
+      },
+      steps: [
+        { wait: 800 },
+        { set: { a: R(0, 0, .5, 1, 1.4), b: R(.5, 0, .5, 1, 1.4) }, html: { tag: 'Window gaps: 12' }, wait: 1300 },
+        { tap: true, keys: 'snap feedback: tap', wait: 1000 },
+        { set: { a: R(0, 0, .5, 1), b: R(.5, 0, .5, 1) }, html: { tag: 'Window gaps: 0' }, keys: '', wait: 900 },
+      ],
+    },
+
+    import: {
+      cursor: [80, 85],
+      objs: {
+        p: box([18, 16, 64, 62], 'panel', '<h5>Quadrant Preferences · General</h5><div class="row"><span>Launch at login</span><span>✓</span></div><div class="row"><span>Window gaps</span><span>━━●━━</span></div><span class="btnx">Export Settings…</span> <span class="btnx">Import Settings…</span>'),
+        f: box([33, 58, 9, 14], 'file', 'JSON', { hidden: true }),
+      },
+      steps: [
+        { cursor: [30, 54], wait: 500 },
+        { down: true, wait: 150 },
+        { down: false, show: 'f', wait: 400 },
+        { set: { f: [84, 74, 9, 14] }, keys: 'saved to a file', wait: 1300 },
+        { keys: 'import it on any Mac', wait: 1200 },
+      ],
+    },
+  };
+
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const CURSOR_SVG = '<svg viewBox="0 0 16 22" width="16" height="22"><path d="M1 1 L1 17 L5 13 L8 20 L11 19 L8 12 L14 12 Z" fill="#fff" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+
+  function build(el, def) {
+    el.innerHTML = '';
+    const bar = document.createElement('div');
+    bar.className = 'menubar';
+    bar.innerHTML = '<i></i><b>▦</b><i></i>';
+    el.appendChild(bar);
+
+    const nodes = {};
+    let z = 1;
+    for (const [id, o] of Object.entries(def.objs)) {
+      const n = document.createElement('div');
+      if (o.type === 'win') {
+        n.className = `obj win t${o.tint || 1}`;
+        n.innerHTML = `<div class="tb"><span></span><span></span><span></span><em>${o.title || ''}</em></div><div class="body"></div>`;
+      } else {
+        n.className = `obj box ${o.cls || ''}`;
+        n.innerHTML = o.html || '';
+      }
+      n.style.zIndex = o.type === 'win' ? z++ : 30;
+      el.appendChild(n);
+      nodes[id] = n;
+    }
+    const preview = document.createElement('div'); preview.className = 'preview'; el.appendChild(preview);
+    const grid = document.createElement('div'); grid.className = 'grid';
+    for (let i = 0; i < 24; i++) grid.appendChild(document.createElement('i'));
+    el.appendChild(grid);
+    const cursor = document.createElement('div'); cursor.className = 'cursor'; cursor.innerHTML = CURSOR_SVG; el.appendChild(cursor);
+    const keys = document.createElement('div'); keys.className = 'keys'; el.appendChild(keys);
+    return { el, def, nodes, preview, grid, cursor, keys, rects: {}, cur: null, z };
+  }
+
+  const place = (n, r) => { n.style.left = r[0] + '%'; n.style.top = r[1] + '%'; n.style.width = r[2] + '%'; n.style.height = r[3] + '%'; };
+
+  function reset(s) {
+    s.el.classList.add('instant');
+    s.el.classList.remove('moving');
+    for (const [id, o] of Object.entries(s.def.objs)) {
+      s.rects[id] = [...o.rect];
+      place(s.nodes[id], o.rect);
+      s.nodes[id].classList.toggle('hidden', !!o.hidden);
+      s.nodes[id].classList.remove('focus');
+      if (o.type === 'box' && o.html !== undefined) s.nodes[id].innerHTML = o.html;
+    }
+    s.preview.classList.remove('show');
+    s.grid.classList.remove('show');
+    s.grid.querySelectorAll('i').forEach(c => c.classList.remove('sel'));
+    s.keys.classList.remove('show');
+    s.cursor.classList.remove('down');
+    s.cur = s.def.cursor ? [...s.def.cursor] : null;
+    s.cursor.style.display = s.cur ? '' : 'none';
+    if (s.cur) { s.cursor.style.left = s.cur[0] + '%'; s.cursor.style.top = s.cur[1] + '%'; }
+    void s.el.offsetWidth; // flush styles before re-enabling transitions
+    s.el.classList.remove('instant');
+    s.el.classList.add('moving');
+  }
+
+  function apply(s, st) {
+    const list = v => (Array.isArray(v) ? v : [v]);
+    if (st.cursor) {
+      const [dx, dy] = s.cur ? [st.cursor[0] - s.cur[0], st.cursor[1] - s.cur[1]] : [0, 0];
+      if (st.drag) { const r = s.rects[st.drag]; s.rects[st.drag] = [r[0] + dx, r[1] + dy, r[2], r[3]]; }
+      if (st.rdrag) { const r = s.rects[st.rdrag]; s.rects[st.rdrag] = [r[0], r[1], Math.max(10, r[2] + dx), Math.max(10, r[3] + dy)]; }
+      for (const id of [st.drag, st.rdrag].filter(Boolean)) { place(s.nodes[id], s.rects[id]); s.nodes[id].style.zIndex = ++s.z; }
+      s.cur = [...st.cursor];
+      s.cursor.style.display = '';
+      s.cursor.style.left = s.cur[0] + '%'; s.cursor.style.top = s.cur[1] + '%';
+    }
+    if (st.set) for (const [id, r] of Object.entries(st.set)) {
+      s.rects[id] = [...r]; place(s.nodes[id], r);
+      if (s.def.objs[id].type === 'win') s.nodes[id].style.zIndex = ++s.z;
+    }
+    if (st.html) for (const [id, h] of Object.entries(st.html)) s.nodes[id].innerHTML = h;
+    if (st.show) list(st.show).forEach(id => s.nodes[id].classList.remove('hidden'));
+    if (st.hide) list(st.hide).forEach(id => s.nodes[id].classList.add('hidden'));
+    if (st.focus) Object.entries(s.nodes).forEach(([id, n]) => {
+      n.classList.toggle('focus', id === st.focus);
+      if (id === st.focus) n.style.zIndex = ++s.z;
+    });
+    if (st.menuHl) {
+      const [id, idx] = st.menuHl;
+      s.nodes[id].querySelectorAll(':scope > div').forEach((d, i) => d.classList.toggle('hl', i === idx));
+    }
+    if ('keys' in st) { if (st.keys) s.keys.textContent = st.keys; s.keys.classList.toggle('show', !!st.keys); }
+    if ('preview' in st) {
+      if (st.preview) { place(s.preview, st.preview); s.preview.style.zIndex = s.z + 1; }
+      s.preview.classList.toggle('show', !!st.preview);
+    }
+    if ('grid' in st) { s.grid.classList.toggle('show', st.grid); s.grid.style.zIndex = s.z + 2; }
+    if ('gridSel' in st) {
+      s.grid.querySelectorAll('i').forEach((c, i) => {
+        const col = i % 6, row = Math.floor(i / 6), g = st.gridSel;
+        c.classList.toggle('sel', !!g && col >= g[0] && col <= g[2] && row >= g[1] && row <= g[3]);
+      });
+    }
+    if ('down' in st) s.cursor.classList.toggle('down', st.down);
+    if (st.tap && s.cur) {
+      const r = document.createElement('div'); r.className = 'ripple';
+      r.style.left = s.cur[0] + '%'; r.style.top = s.cur[1] + '%';
+      s.el.appendChild(r); setTimeout(() => r.remove(), 700);
+    }
+  }
+
+  async function loop(s) {
+    const run = ++s.run;
+    while (s.visible && run === s.run) {
+      reset(s);
+      await sleep(500);
+      for (const st of s.def.steps) {
+        if (!s.visible || run !== s.run) return;
+        apply(s, st);
+        await sleep(st.wait ?? 750);
+      }
+      await sleep(900);
+    }
+  }
+
+  const scenes = [...document.querySelectorAll('.scene[data-scene]')].map(el => {
+    const def = SCENES[el.dataset.scene];
+    if (!def) return null;
+    const s = build(el, def);
+    s.run = 0; s.visible = false;
+    reset(s);
+    if (reduceMotion) {
+      // Show the end state without animating.
+      s.el.classList.add('instant');
+      def.steps.forEach(st => apply(s, { ...st, tap: false }));
+    }
+    return s;
+  }).filter(Boolean);
+
+  if (!reduceMotion && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      for (const e of entries) {
+        const s = scenes.find(x => x.el === e.target);
+        if (!s) continue;
+        const nowVisible = e.isIntersecting;
+        if (nowVisible && !s.visible) { s.visible = true; loop(s); }
+        else if (!nowVisible && s.visible) { s.visible = false; s.run++; }
+      }
+    }, { threshold: 0.35 });
+    scenes.forEach(s => io.observe(s.el));
+  }
+
+  // Highlight the topic currently on screen in the topic nav.
+  const links = [...document.querySelectorAll('.toc a')];
+  const byId = Object.fromEntries(links.map(a => [a.getAttribute('href').slice(1), a]));
+  const topicObserver = new IntersectionObserver(entries => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      links.forEach(a => a.classList.remove('on'));
+      const a = byId[e.target.id];
+      if (a) {
+        a.classList.add('on');
+        const toc = a.parentElement;
+        if (toc.scrollWidth > toc.clientWidth) toc.scrollTo({ left: a.offsetLeft - 16, behavior: reduceMotion ? 'auto' : 'smooth' });
+      }
+    }
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('.topic').forEach(t => topicObserver.observe(t));
+})();
+</script>
+</body>
+</html>
