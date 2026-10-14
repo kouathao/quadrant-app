@@ -3,23 +3,20 @@
   <channel>
     <title>Quadrant</title>
     <item>
-      <title>Quadrant 1.0.0</title>
-      <pubDate>Tue, 13 Oct 2026 19:31:15 +0000</pubDate>
-      <sparkle:version>1</sparkle:version>
-      <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
+      <title>Quadrant 1.0.1</title>
+      <pubDate>Wed, 14 Oct 2026 16:36:05 +0000</pubDate>
+      <sparkle:version>2</sparkle:version>
+      <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
       <description><![CDATA[
-<p>First public release of Quadrant.</p>
 <ul>
-<li>Snap windows to halves, thirds, corners and other displays with one shortcut</li>
-<li>Drag windows to screen edges to snap them</li>
-<li>Move and resize windows from anywhere by holding ⌃⌥</li>
-<li>Grid picker, tile all windows, saved layouts and app rules</li>
-<li>Shortcut cheat sheet (⌃⌥⌘/)</li>
-<li>Free, with quiet automatic updates</li>
+<li>Updates now come from quadrantmac.com, Quadrant's new home</li>
+</ul>
+<ul>
+<li>The Website link in Support Quadrant opens quadrantmac.com</li>
 </ul>
       ]]></description>
-      <enclosure url="https://github.com/kouathao/quadrant-app/releases/download/v1.0.0/Quadrant-1.0.0.zip" type="application/octet-stream" sparkle:edSignature="GKwMQ4mY7UR2xaEklHkofvOkxaTcVtVsM645H9ube/I93kma+YH8QmZ42UBB4Dg5wKPMyjaMgCzjG9HOeaStDg==" length="2630532" />
+      <enclosure url="https://github.com/kouathao/quadrant-app/releases/download/v1.0.1/Quadrant-1.0.1.zip" type="application/octet-stream" sparkle:edSignature="hmLL3CFJyhiqzw4HfbVDXCCeQN7hwMyo48SxhGOZR9QN4/YvFArBKwoRfe1kh8+u2MX/arhegINEFRcCMR53Bg==" length="2630565" />
     </item>
   </channel>
 </rss>

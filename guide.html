@@ -3,18 +3,67 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quadrant Guide — How to use Quadrant</title>
-<meta name="description" content="Step-by-step guide to Quadrant: keyboard snapping, drag to snap, move from anywhere, grid picker, layouts and more, with short animations.">
-<link rel="icon" href="icon.png">
+<title>How to Use Quadrant — Mac Window Manager Guide</title>
+<meta name="description" content="Step-by-step guide to Quadrant for Mac: snap windows with keyboard shortcuts, drag to snap, move from anywhere, grid picker, saved layouts, app rules and more, with short animations.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://quadrantmac.com/guide.html">
+<meta name="theme-color" content="#4f5bf7">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Quadrant">
+<meta property="og:url" content="https://quadrantmac.com/guide.html">
+<meta property="og:title" content="How to Use Quadrant — Mac Window Manager Guide">
+<meta property="og:description" content="Short, animated how-tos for snapping, dragging, layouts and every other Quadrant feature.">
+<meta property="og:image" content="https://quadrantmac.com/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Quadrant: keyboard window management for Mac">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to Use Quadrant — Mac Window Manager Guide">
+<meta name="twitter:description" content="Short, animated how-tos for snapping, dragging, layouts and every other Quadrant feature.">
+<meta name="twitter:image" content="https://quadrantmac.com/images/og-image.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://quadrantmac.com/guide.html#article",
+      "headline": "How to use Quadrant",
+      "description": "Step-by-step guide to Quadrant for Mac: keyboard snapping, drag to snap, move from anywhere, grid picker, saved layouts, app rules and more.",
+      "url": "https://quadrantmac.com/guide.html",
+      "image": "https://quadrantmac.com/images/og-image.png",
+      "inLanguage": "en",
+      "author": { "@type": "Person", "name": "Koua Thao" },
+      "about": { "@id": "https://quadrantmac.com/#app" },
+      "isPartOf": { "@id": "https://quadrantmac.com/#website" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Quadrant", "item": "https://quadrantmac.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Guide", "item": "https://quadrantmac.com/guide.html" }
+      ]
+    }
+  ]
+}
+</script>
+<script src="analytics.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #fbfbfd; --surface: #ffffff; --text: #1d1d1f; --muted: #6e6e73; --line: #e5e5ea;
-    --accent: #4f5bf7; --accent-2: #19a0fa; --key-bg: #f2f2f7;
+    --accent: #4f5bf7; --accent-2: #0d6fcf; --key-bg: #f2f2f7;
+    /* --accent-ink: gradient end that keeps white text at 4.5:1. --link: accent text on the page background. */
+    --accent-ink: #0d6fcf; --link: #4f5bf7;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #0d0d12; --surface: #17171f; --text: #f5f5f7; --muted: #a1a1aa; --line: #2a2a35; --key-bg: #23232e; }
+    :root { --bg: #0d0d12; --surface: #17171f; --text: #f5f5f7; --muted: #a1a1aa; --line: #2a2a35; --key-bg: #23232e; --accent-2: #19a0fa; --link: #8b93ff; }
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -48,7 +97,7 @@
   .level-head { display: flex; align-items: baseline; gap: 12px; margin: 26px 0 16px; }
   .level-head:first-child { margin-top: 0; }
   .level-head h2 { font-size: 26px; letter-spacing: -0.02em; margin: 0; }
-  .pill { font-size: 12px; font-weight: 700; color: #fff; padding: 3px 10px; border-radius: 99px; background: linear-gradient(100deg, var(--accent), var(--accent-2)); white-space: nowrap; }
+  .pill { font-size: 12px; font-weight: 700; color: #fff; padding: 3px 10px; border-radius: 99px; background: linear-gradient(100deg, var(--accent), var(--accent-ink)); white-space: nowrap; }
   .level-head p { margin: 0; color: var(--muted); font-size: 15px; }
 
   .topic { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 28px; align-items: center;
@@ -86,7 +135,7 @@
   .scene .menu div.hl { background: var(--accent); color: #fff; }
   .scene .menu hr { border: 0; border-top: 1px solid #ddd; margin: 3px 4px; }
   .scene .panel { background: rgba(250,250,252,.97); border-radius: 8px; box-shadow: 0 10px 28px rgba(0,0,0,.35); padding: 8px 10px; }
-  .scene .panel h5 { margin: 0 0 4px; font-size: 10px; }
+  .scene .panel .ttl { margin: 0 0 4px; font-size: 10px; font-weight: 700; }
   .scene .panel .row { display: flex; justify-content: space-between; gap: 8px; white-space: nowrap; }
   .scene .panel .btnx { display: inline-block; margin-top: 4px; padding: 2px 8px; border-radius: 4px; background: var(--accent); color: #fff; }
   .scene .tag { background: rgba(0,0,0,.6); color: #fff; border-radius: 6px; padding: 3px 7px; font-size: 9px; font-weight: 600; white-space: nowrap; text-align: center; }
@@ -109,8 +158,18 @@
   footer { padding: 40px 0 60px; text-align: center; color: var(--muted); font-size: 14px; }
   .next { text-align: center; margin: 30px 0 10px; }
   .btn { display: inline-block; padding: 12px 22px; border-radius: 12px; font-weight: 600; text-decoration: none; font-size: 15px; }
-  .btn.primary { background: linear-gradient(100deg, var(--accent), var(--accent-2)); color: #fff; box-shadow: 0 8px 24px rgba(79,91,247,.3); }
+  .btn.primary { background: linear-gradient(100deg, var(--accent), var(--accent-ink)); color: #fff; box-shadow: 0 8px 24px rgba(79,91,247,.3); }
   .btn.secondary { background: var(--surface); border: 1px solid var(--line); margin-left: 8px; }
+
+  /* Accessibility */
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  .skip-link { position: absolute; left: 16px; top: -80px; z-index: 100; background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-weight: 600; text-decoration: none; }
+  .skip-link:focus { top: 12px; }
+  :focus-visible { outline: 3px solid var(--link); outline-offset: 3px; }
+  .scene-wrap { position: relative; min-width: 0; }
+  .anim-toggle { position: absolute; top: 9%; right: 8px; z-index: 70; font: inherit; font-size: 12px; font-weight: 600; min-height: 28px; padding: 4px 10px;
+    border-radius: 99px; border: 1px solid rgba(255,255,255,.6); background: rgba(0,0,0,.6); color: #fff; cursor: pointer; }
+  @media (forced-colors: active) { h1 span { color: CanvasText; background: none; } }
 
   @media (max-width: 900px) {
     .layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
@@ -121,7 +180,7 @@
     .toc a { flex: none; border: 1px solid var(--line); border-radius: 99px; padding: 5px 12px; background: var(--surface); font-size: 13px; }
     .toc a.on { background: var(--text); color: var(--bg); border-color: var(--text); }
     .topic { grid-template-columns: minmax(0, 1fr); scroll-margin-top: 70px; }
-    .topic .scene { order: -1; }
+    .topic .scene-wrap { order: -1; }
   }
   @media (max-width: 680px) {
     nav.top .links a:not(.buy) { display: none; }
@@ -132,25 +191,26 @@
 </style>
 </head>
 <body>
+<a class="skip-link" href="#content">Skip to content</a>
 <div class="wrap">
-  <nav class="top">
+  <nav class="top" aria-label="Primary">
     <a class="brand" href="index.html"><img src="icon.png" alt="">Quadrant</a>
     <div class="links">
       <a href="index.html#features">Features</a>
       <a class="active" href="guide.html" aria-current="page">Guide</a>
       <a href="index.html#shortcuts">Shortcuts</a>
       <a href="index.html#faq">FAQ</a>
-      <a class="buy" href="index.html#support">Support ☕</a>
+      <a class="buy" href="index.html#support">Support <span aria-hidden="true">☕</span></a>
     </div>
   </nav>
 
-  <header class="intro">
+  <header class="intro" id="content">
     <h1>How to use <span>Quadrant</span></h1>
     <p class="lede">Short, animated how-tos. Start with the basics; everything else is optional and there when you want it.</p>
   </header>
 
   <div class="layout">
-    <aside class="toc" aria-label="Topics">
+    <nav class="toc" aria-label="Guide topics">
       <div class="lvl">Basics</div>
       <a href="#start">Getting started</a>
       <a href="#keyboard">Snap with keys</a>
@@ -169,7 +229,7 @@
       <a href="#excluded">Excluded apps</a>
       <a href="#gaps">Gaps &amp; feedback</a>
       <a href="#import">Import &amp; export</a>
-    </aside>
+    </nav>
 
     <main>
       <!-- ============ BASICS ============ -->
@@ -184,7 +244,7 @@
               <li>Download Quadrant and drag it into <b>Applications</b>.</li>
               <li>Open it. If macOS says it can't verify Quadrant, <a href="index.html#unverified">follow these 3 steps</a>.</li>
               <li>The setup window asks for <b>Accessibility</b> access. Click Open System Settings and turn Quadrant on.</li>
-              <li>Click the <b>▦</b> icon in the menu bar for every action.</li>
+              <li>Click the <b role="img" aria-label="grid">▦</b> icon in the menu bar for every action.</li>
             </ol>
           </div>
           <div class="scene" data-scene="start" role="img" aria-label="Animation: clicking the Quadrant menu bar icon and choosing Left Half"></div>
@@ -289,7 +349,7 @@
             <p class="what">Save where every window is, and bring it all back in one click.</p>
             <ol>
               <li>Arrange your windows the way you like.</li>
-              <li><b>▦</b> → <b>Layouts</b> → <b>Save Current Layout…</b> and name it.</li>
+              <li><b role="img" aria-label="menu bar icon">▦</b> → <b>Layouts</b> → <b>Save Current Layout…</b> and name it.</li>
               <li>Pick it from <b>Layouts</b> later and every window jumps back.</li>
             </ol>
             <p class="note">In Preferences → Layouts, give a layout its own shortcut or turn on <b>Auto-restore</b> for when you plug in the same monitors.</p>
@@ -355,7 +415,7 @@
             <p class="what">Let an app keep its own shortcuts, like ⌘← in a code editor.</p>
             <ol>
               <li>Switch to the app.</li>
-              <li><b>▦</b> → <b>Disable Shortcuts in “App”</b>.</li>
+              <li><b role="img" aria-label="menu bar icon">▦</b> → <b>Disable Shortcuts in “App”</b>.</li>
               <li>Now <kbd>⌘←</kbd> goes to the app, not Quadrant. Manage the list in Preferences → Excluded Apps.</li>
             </ol>
           </div>
@@ -394,7 +454,7 @@
     </main>
   </div>
 
-  <footer>© 2026 Quadrant · <a href="mailto:support@quadrantmac.com">support@quadrantmac.com</a></footer>
+  <footer>© 2026 Quadrant · <a href="mailto:support@quadrantmac.com">support@quadrantmac.com</a> · <button type="button" class="linklike" id="cookie-settings">Cookie settings</button></footer>
 </div>
 
 <script>
@@ -578,7 +638,7 @@
       objs: {
         a: win(R(0, 0, .5, 1, .6), 'Code', 1),
         b: win(R(.5, 0, .5, 1, .6), 'Safari', 2),
-        sheet: box([18, 16, 64, 68], 'panel', '<h5>Quadrant shortcuts</h5><div class="row"><span>Left / Right Half</span><span>⌘← ⌘→</span></div><div class="row"><span>Corners</span><span>⌃⌘ + arrow</span></div><div class="row"><span>Almost Maximize</span><span>⌃⌥↩</span></div><div class="row"><span>Grid Picker</span><span>⌃⌥⌘G</span></div><div class="row"><span>Tile All</span><span>⌃⌥⌘T</span></div><div class="row"><span>Undo</span><span>⌥⌘Z</span></div>', { hidden: true }),
+        sheet: box([18, 16, 64, 68], 'panel', '<div class="ttl">Quadrant shortcuts</div><div class="row"><span>Left / Right Half</span><span>⌘← ⌘→</span></div><div class="row"><span>Corners</span><span>⌃⌘ + arrow</span></div><div class="row"><span>Almost Maximize</span><span>⌃⌥↩</span></div><div class="row"><span>Grid Picker</span><span>⌃⌥⌘G</span></div><div class="row"><span>Tile All</span><span>⌃⌥⌘T</span></div><div class="row"><span>Undo</span><span>⌥⌘Z</span></div>', { hidden: true }),
       },
       steps: [
         { wait: 600 },
@@ -620,7 +680,7 @@
     import: {
       cursor: [80, 85],
       objs: {
-        p: box([18, 16, 64, 62], 'panel', '<h5>Quadrant Preferences · General</h5><div class="row"><span>Launch at login</span><span>✓</span></div><div class="row"><span>Window gaps</span><span>━━●━━</span></div><span class="btnx">Export Settings…</span> <span class="btnx">Import Settings…</span>'),
+        p: box([18, 16, 64, 62], 'panel', '<div class="ttl">Quadrant Preferences · General</div><div class="row"><span>Launch at login</span><span>✓</span></div><div class="row"><span>Window gaps</span><span>━━●━━</span></div><span class="btnx">Export Settings…</span> <span class="btnx">Import Settings…</span>'),
         f: box([33, 58, 9, 14], 'file', 'JSON', { hidden: true }),
       },
       steps: [
@@ -739,13 +799,15 @@
     }
   }
 
+  const running = s => s.visible && !s.paused;
+
   async function loop(s) {
     const run = ++s.run;
-    while (s.visible && run === s.run) {
+    while (running(s) && run === s.run) {
       reset(s);
       await sleep(500);
       for (const st of s.def.steps) {
-        if (!s.visible || run !== s.run) return;
+        if (!running(s) || run !== s.run) return;
         apply(s, st);
         await sleep(st.wait ?? 750);
       }
@@ -753,27 +815,51 @@
     }
   }
 
+  // Every animation gets a Pause/Play button (WCAG 2.2.2). With reduced motion they start paused.
+  function addToggle(s) {
+    const wrap = document.createElement('div');
+    wrap.className = 'scene-wrap';
+    s.el.before(wrap);
+    wrap.append(s.el);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'anim-toggle';
+    const topic = s.el.closest('.topic')?.querySelector('h3')?.textContent || 'this';
+    const label = () => {
+      btn.textContent = s.paused ? 'Play' : 'Pause';
+      btn.setAttribute('aria-label', `${s.paused ? 'Play' : 'Pause'} animation: ${topic}`);
+    };
+    btn.addEventListener('click', () => {
+      s.paused = !s.paused;
+      if (s.paused) s.run++; else if (s.visible) loop(s);
+      label();
+    });
+    label();
+    wrap.append(btn);
+  }
+
   const scenes = [...document.querySelectorAll('.scene[data-scene]')].map(el => {
     const def = SCENES[el.dataset.scene];
     if (!def) return null;
     const s = build(el, def);
-    s.run = 0; s.visible = false;
+    s.run = 0; s.visible = false; s.paused = reduceMotion;
     reset(s);
     if (reduceMotion) {
       // Show the end state without animating.
       s.el.classList.add('instant');
       def.steps.forEach(st => apply(s, { ...st, tap: false }));
     }
+    addToggle(s);
     return s;
   }).filter(Boolean);
 
-  if (!reduceMotion && 'IntersectionObserver' in window) {
+  if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver(entries => {
       for (const e of entries) {
         const s = scenes.find(x => x.el === e.target);
         if (!s) continue;
         const nowVisible = e.isIntersecting;
-        if (nowVisible && !s.visible) { s.visible = true; loop(s); }
+        if (nowVisible && !s.visible) { s.visible = true; if (!s.paused) loop(s); }
         else if (!nowVisible && s.visible) { s.visible = false; s.run++; }
       }
     }, { threshold: 0.35 });
@@ -786,16 +872,46 @@
   const topicObserver = new IntersectionObserver(entries => {
     for (const e of entries) {
       if (!e.isIntersecting) continue;
-      links.forEach(a => a.classList.remove('on'));
+      links.forEach(a => { a.classList.remove('on'); a.removeAttribute('aria-current'); });
       const a = byId[e.target.id];
       if (a) {
         a.classList.add('on');
+        a.setAttribute('aria-current', 'location');
         const toc = a.parentElement;
         if (toc.scrollWidth > toc.clientWidth) toc.scrollTo({ left: a.offsetLeft - 16, behavior: reduceMotion ? 'auto' : 'smooth' });
       }
     }
   }, { rootMargin: '-40% 0px -55% 0px' });
   document.querySelectorAll('.topic').forEach(t => topicObserver.observe(t));
+
+  // Screen readers announce ⌘⌃⌥⇧ as symbol names ("place of interest sign"). Give each
+  // shortcut a spoken name, e.g. ⌃⌥⌘G reads as "Control Option Command G".
+  const KEY_NAMES = { '⌘': 'Command', '⌃': 'Control', '⌥': 'Option', '⇧': 'Shift', '←': 'Left Arrow', '→': 'Right Arrow',
+    '↑': 'Up Arrow', '↓': 'Down Arrow', '↩': 'Return', '⌫': 'Delete', '/': 'Slash' };
+  const SHORTCUT = /[⌃⌥⇧⌘]+(?:\s?(?:[←→↑↓↩⌫\/]|[A-Z](?![A-Za-z])))?/g;
+  function speakShortcuts(root) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: n => n.parentElement.closest('[aria-hidden="true"], [role="img"], script, style')
+        ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT,
+    });
+    const nodes = [];
+    while (walker.nextNode()) if (/[⌃⌥⇧⌘]/.test(walker.currentNode.nodeValue)) nodes.push(walker.currentNode);
+    for (const node of nodes) {
+      const frag = document.createDocumentFragment();
+      let last = 0;
+      for (const m of node.nodeValue.matchAll(SHORTCUT)) {
+        frag.append(node.nodeValue.slice(last, m.index));
+        const shown = document.createElement('span'); shown.setAttribute('aria-hidden', 'true'); shown.textContent = m[0];
+        const spoken = document.createElement('span'); spoken.className = 'sr-only';
+        spoken.textContent = [...m[0].replace(/\s/g, '')].map(c => KEY_NAMES[c] || c).join(' ');
+        frag.append(shown, spoken);
+        last = m.index + m[0].length;
+      }
+      frag.append(node.nodeValue.slice(last));
+      node.replaceWith(frag);
+    }
+  }
+  speakShortcuts(document.querySelector('main'));
 })();
 </script>
 </body>
