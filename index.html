@@ -245,28 +245,6 @@
   .tip-note { color: var(--muted); font-size: 14px; margin: 12px 0 0; }
   .glyph { font-weight: 700; }
 
-  .unverified { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); }
-  .unverified h4 { margin: 0 0 6px; font-size: 17px; }
-  .mac-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 18px 0 6px; }
-  .mac-steps figure { margin: 0; }
-  .mac-steps figcaption { font-size: 14px; color: var(--muted); margin-top: 10px; }
-  .mac-steps figcaption b { color: var(--text); }
-  .mock { height: 200px; border-radius: 12px; border: 1px solid var(--line); background: var(--key-bg);
-    font-size: 11px; line-height: 1.35; color: var(--text); overflow: hidden; }
-  .mock.dialog { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 6px; padding: 14px 16px; }
-  .mock.dialog img { width: 38px; height: 38px; }
-  .mock.dialog strong { font-size: 12px; }
-  .mock.dialog span { color: var(--muted); }
-  .mbtns { display: flex; gap: 6px; width: 100%; margin-top: 4px; }
-  .mbtns i, .mock .pane i { flex: 1; font-style: normal; font-weight: 500; padding: 5px 8px; border-radius: 7px; background: var(--surface); border: 1px solid var(--line); }
-  .mock i.hl { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .mock.settings { display: flex; }
-  .mock .side { width: 38%; background: var(--surface); border-right: 1px solid var(--line); padding: 10px 8px; display: flex; flex-direction: column; gap: 7px; }
-  .mock .side i { height: 9px; border-radius: 4px; background: var(--line); }
-  .mock .side i.on { height: auto; font-style: normal; font-size: 10px; font-weight: 600; padding: 4px 6px; background: var(--accent); color: #fff; }
-  .mock .pane { flex: 1; padding: 14px 12px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; justify-content: center; }
-  .mock .pane span { color: var(--muted); }
-  .mock .pane i { flex: none; box-shadow: 0 0 0 3px rgba(79,91,247,.35); }
 
   .zones { flex: none; width: 300px; aspect-ratio: 16/10; display: grid; grid-template-columns: 22% 1fr 22%;
     grid-template-rows: 26% 1fr 26%; gap: 4px; padding: 6px; border-radius: 12px; background: linear-gradient(160deg, #2b2d6e, #0f5f9c); }
@@ -295,7 +273,6 @@
     td.k { white-space: normal; }
     .guide { flex-direction: column; align-items: stretch; padding: 22px; }
     .zones { width: 100%; }
-    .mac-steps { grid-template-columns: 1fr; }
     nav .links a:not(.buy) { display: none; }
     section { padding: 52px 0; }
   }
@@ -364,51 +341,11 @@
         <h3><span class="num">1</span>Get started</h3>
         <ol>
           <li>Download Quadrant and drag it into your <b>Applications</b> folder.</li>
-          <li>Open it. If macOS says it <b>can't verify Quadrant</b>, follow the <a href="#unverified">three quick steps below</a>. You only do this once.</li>
+          <li>Open it. macOS asks once to confirm opening an app downloaded from the internet. Click <b>Open</b>.</li>
           <li>A setup window walks you through allowing <b>Accessibility</b> access, which macOS requires before any app can move windows.</li>
           <li>Click <b>Open System Settings</b>, turn Quadrant <b>on</b>, and come back. The setup window confirms when you're done.</li>
           <li>Look for the <span class="glyph" role="img" aria-label="grid">▦</span> icon in your menu bar. That's Quadrant.</li>
         </ol>
-
-        <div class="unverified" id="unverified">
-          <h4>If macOS says it can't verify Quadrant</h4>
-          <p class="tip-note">Quadrant is an independent app that isn't registered with Apple yet, so the first time you open it macOS shows a warning. It's safe to open. Here's how:</p>
-
-          <div class="mac-steps">
-            <figure>
-              <div class="mock dialog" role="img" aria-label="Example macOS dialog: “Quadrant” Not Opened, with Move to Trash and Done buttons.">
-                <img src="icon.png" alt="">
-                <strong>“Quadrant” Not Opened</strong>
-                <span>Apple could not verify “Quadrant” is free of malware that may harm your Mac or compromise your privacy.</span>
-                <div class="mbtns"><i>Move to Trash</i><i class="hl">Done</i></div>
-              </div>
-              <figcaption><b>1.</b> You'll see this when you first open Quadrant. Click <b>Done</b>. Don't move it to the Trash.</figcaption>
-            </figure>
-
-            <figure>
-              <div class="mock settings" role="img" aria-label="Example System Settings, Privacy &amp; Security pane, showing “Quadrant” was blocked and an Open Anyway button.">
-                <div class="side"><i></i><i></i><i class="on">Privacy &amp; Security</i><i></i><i></i></div>
-                <div class="pane">
-                  <b>Security</b>
-                  <span>“Quadrant” was blocked to protect your Mac.</span>
-                  <i class="hl">Open Anyway</i>
-                </div>
-              </div>
-              <figcaption><b>2.</b> Open <b>System Settings → Privacy &amp; Security</b>, scroll down to <b>Security</b>, and click <b>Open Anyway</b>.</figcaption>
-            </figure>
-
-            <figure>
-              <div class="mock dialog" role="img" aria-label="Example macOS dialog: Open “Quadrant”?, with Done and Open Anyway buttons.">
-                <img src="icon.png" alt="">
-                <strong>Open “Quadrant”?</strong>
-                <span>Only open it if you trust where it came from.</span>
-                <div class="mbtns"><i>Done</i><i class="hl">Open Anyway</i></div>
-              </div>
-              <figcaption><b>3.</b> Click <b>Open Anyway</b> and enter your Mac password. From now on Quadrant opens normally.</figcaption>
-            </figure>
-          </div>
-          <p class="tip-note">The exact wording varies a little between macOS versions. If you don't see the Open Anyway button, try opening Quadrant once more first. It only appears for about an hour after a blocked launch.</p>
-        </div>
       </div>
     </div>
 
@@ -559,7 +496,7 @@
   </section>
   </main>
 
-  <footer>© 2026 Quadrant · <a href="mailto:support@quadrantmac.com">support@quadrantmac.com</a> · <button type="button" class="linklike" id="cookie-settings">Cookie settings</button></footer>
+  <footer>© 2026 Quadrant · <a href="mailto:kouathao09@gmail.com">support@quadrantmac.com</a> · <button type="button" class="linklike" id="cookie-settings">Cookie settings</button></footer>
 </div>
 
 <script>
