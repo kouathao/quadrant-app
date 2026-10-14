@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quadrant Changelog — What's New</title>
+<meta name="description" content="Every Quadrant release and what changed: new features, fixes and improvements to the free keyboard window manager for Mac.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://quadrantmac.com/changelog.html">
+<meta name="theme-color" content="#4f5bf7">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Quadrant">
+<meta property="og:url" content="https://quadrantmac.com/changelog.html">
+<meta property="og:title" content="Quadrant Changelog — What's New">
+<meta property="og:description" content="Every Quadrant release and what changed.">
+<meta property="og:image" content="https://quadrantmac.com/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Quadrant: keyboard window management for Mac">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Quadrant Changelog — What's New">
+<meta name="twitter:description" content="Every Quadrant release and what changed.">
+<meta name="twitter:image" content="https://quadrantmac.com/images/og-image.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Quadrant", "item": "https://quadrantmac.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Changelog", "item": "https://quadrantmac.com/changelog.html" }
+  ]
+}
+</script>
+<script src="analytics.js" defer></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbfbfd; --surface: #ffffff; --text: #1d1d1f; --muted: #6e6e73; --line: #e5e5ea;
+    --accent: #4f5bf7; --accent-2: #0d6fcf; --key-bg: #f2f2f7;
+    /* --accent-ink: gradient end that keeps white text at 4.5:1. --link: accent text on the page background. */
+    --accent-ink: #0d6fcf; --link: #4f5bf7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0d0d12; --surface: #17171f; --text: #f5f5f7; --muted: #a1a1aa; --line: #2a2a35; --key-bg: #23232e; --accent-2: #19a0fa; --link: #8b93ff; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.55; }
+  a { color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+  nav.top { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; text-decoration: none; }
+  .brand img { width: 32px; height: 32px; }
+  nav.top .links a { margin-left: 22px; color: var(--muted); text-decoration: none; font-size: 15px; }
+  nav.top .links a:hover, nav.top .links a.active { color: var(--text); }
+  nav.top .links a.active { font-weight: 600; }
+
+  .intro { text-align: center; padding: 36px 0 28px; }
+  h1 { font-size: clamp(32px, 5vw, 50px); line-height: 1.08; letter-spacing: -0.03em; margin: 0 0 12px; font-weight: 800; }
+  h1 span { background: linear-gradient(100deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lede { font-size: 18px; color: var(--muted); max-width: 620px; margin: 0 auto; }
+
+  .intro { position: relative; }
+  .intro::before { content: ""; position: absolute; inset: -40px 10% auto; height: 260px; z-index: -1; pointer-events: none;
+    background: radial-gradient(closest-side, rgba(79,91,247,.16), transparent); }
+
+  /* Timeline: date on the left, a line with a dot per release, the notes in a card. */
+  .timeline { --date-w: 128px; --gap: 44px; position: relative; list-style: none; margin: 10px auto 0; padding: 0; max-width: 860px; }
+  .timeline::before { content: ""; position: absolute; top: 8px; bottom: 8px; left: calc(var(--date-w) + var(--gap) / 2); width: 2px; margin-left: -1px;
+    background: linear-gradient(var(--accent), var(--line) 140px); border-radius: 2px; }
+  .release { display: grid; grid-template-columns: var(--date-w) minmax(0, 1fr); gap: var(--gap); margin-bottom: 22px; scroll-margin-top: 16px; }
+  .when { text-align: right; padding-top: 22px; color: var(--muted); font-size: 14px; font-weight: 500; }
+  .when-inline { display: none; color: var(--muted); font-size: 14px; }
+  .card { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px 26px; }
+  .card::before { content: ""; position: absolute; top: 26px; left: calc(var(--gap) / -2 - 7px); width: 14px; height: 14px; border-radius: 50%;
+    background: var(--bg); border: 3px solid var(--line); box-sizing: border-box; }
+  .latest .card { border: 1.5px solid transparent; box-shadow: 0 18px 50px rgba(79,91,247,.16);
+    background: linear-gradient(var(--surface), var(--surface)) padding-box, linear-gradient(120deg, var(--accent), var(--accent-2)) border-box; }
+  .latest .card::before { background: var(--accent); border-color: var(--bg); box-shadow: 0 0 0 4px rgba(79,91,247,.3); }
+  .latest .when { color: var(--text); font-weight: 600; }
+
+  .card-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-bottom: 12px; }
+  .card h2 { font-size: 22px; letter-spacing: -0.02em; margin: 0; }
+  .card h2 a { text-decoration: none; }
+  .card h2 a:hover { text-decoration: underline; }
+  .badge { font-size: 12px; font-weight: 700; color: #fff; padding: 3px 10px; border-radius: 99px; background: linear-gradient(100deg, var(--accent), var(--accent-ink)); white-space: nowrap; }
+  .card p { margin: 0 0 12px; }
+  .card > :last-child { margin-bottom: 0; }
+  .card code { font-size: 14px; background: var(--key-bg); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
+  .changes { list-style: none; margin: 0 0 12px; padding: 0; }
+  .changes li { display: flex; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px solid var(--line); }
+  .changes li:first-child { border-top: 0; padding-top: 2px; }
+  .changes li:last-child { padding-bottom: 0; }
+  .changes li:not(:has(.kind))::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); transform: translateY(-3px); }
+  .kind { flex: none; min-width: 74px; text-align: center; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
+  .kind.new { color: #11663a; background: #e2f5e9; }
+  .kind.fixed { color: #8f4300; background: #fdeddc; }
+  .kind.improved { color: #1d4fb8; background: #e3ecfd; }
+  .kind.removed { color: #55555c; background: #ececf0; }
+  @media (prefers-color-scheme: dark) {
+    .kind.new { color: #7ee2a8; background: rgba(46,160,90,.18); }
+    .kind.fixed { color: #ffb672; background: rgba(230,130,40,.18); }
+    .kind.improved { color: #9ab8ff; background: rgba(80,120,240,.2); }
+    .kind.removed { color: #c4c4cc; background: rgba(255,255,255,.08); }
+  }
+  .empty { text-align: center; color: var(--muted); }
+
+  .cta { max-width: 860px; margin: 36px auto 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px;
+    padding: 26px 28px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); }
+  .cta h2 { margin: 0 0 4px; font-size: 20px; letter-spacing: -0.01em; }
+  .cta p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  footer { padding: 40px 0 60px; text-align: center; color: var(--muted); font-size: 14px; }
+  .btn { display: inline-block; padding: 12px 22px; border-radius: 12px; font-weight: 600; text-decoration: none; font-size: 15px; }
+  .btn.primary { background: linear-gradient(100deg, var(--accent), var(--accent-ink)); color: #fff; box-shadow: 0 8px 24px rgba(79,91,247,.3); }
+  .btn.secondary { background: var(--surface); border: 1px solid var(--line); margin-left: 8px; }
+
+  /* Accessibility */
+  .skip-link { position: absolute; left: 16px; top: -80px; z-index: 100; background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-weight: 600; text-decoration: none; }
+  .skip-link:focus { top: 12px; }
+  :focus-visible { outline: 3px solid var(--link); outline-offset: 3px; }
+  @media (forced-colors: active) { h1 span { color: CanvasText; background: none; } }
+
+  @media (max-width: 760px) {
+    .timeline { --gap: 28px; }
+    .timeline::before { left: 7px; }
+    .release { grid-template-columns: minmax(0, 1fr); padding-left: var(--gap); }
+    .when { display: none; }
+    .when-inline { display: inline; }
+    .card::before { left: calc(var(--gap) * -1 + 1px); }
+  }
+  @media (max-width: 680px) {
+    nav.top .links a:not(.buy) { display: none; }
+    .card { padding: 20px; }
+    .cta { padding: 22px; }
+    .btn.secondary { margin: 10px 0 0; }
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<div class="wrap">
+  <nav class="top" aria-label="Primary">
+    <a class="brand" href="index.html"><img src="icon.png" alt="">Quadrant</a>
+    <div class="links">
+      <a href="index.html#features">Features</a>
+      <a href="guide.html">Guide</a>
+      <a class="active" href="changelog.html" aria-current="page">Changelog</a>
+      <a href="index.html#faq">FAQ</a>
+      <a class="buy" href="index.html#support">Support <span aria-hidden="true">☕</span></a>
+    </div>
+  </nav>
+
+  <main id="content">
+    <header class="intro">
+      <h1>What's <span>new</span></h1>
+      <p class="lede">Every Quadrant release and what changed. Quadrant updates itself quietly, so you're probably already on the latest version.</p>
+    </header>
+
+<!-- RELEASES:START (scripts/update-changelog.sh rewrites everything up to RELEASES:END) -->
+    <ol class="timeline">
+      <li class="release latest" id="v1.1.0">
+        <div class="when"><time datetime="2026-10-14">Oct 14, 2026</time></div>
+        <article class="card" aria-labelledby="v1.1.0-title">
+          <div class="card-head">
+            <h2 id="v1.1.0-title"><a href="#v1.1.0">Version 1.1.0</a></h2>
+            <span class="badge">Latest</span>
+            <span class="when-inline"><time datetime="2026-10-14">Oct 14, 2026</time></span>
+          </div>
+          <ul class="changes"><li><span>Quadrant is now verified by Apple, so it opens without security warnings</span></li><li><span>After this update, turn Quadrant back on in System Settings → Privacy &amp; Security → Accessibility (one time only)</span></li></ul>
+        </article>
+      </li>
+      <li class="release" id="v1.0.1">
+        <div class="when"><time datetime="2026-10-14">Oct 14, 2026</time></div>
+        <article class="card" aria-labelledby="v1.0.1-title">
+          <div class="card-head">
+            <h2 id="v1.0.1-title"><a href="#v1.0.1">Version 1.0.1</a></h2>
+            <span class="when-inline"><time datetime="2026-10-14">Oct 14, 2026</time></span>
+          </div>
+          <ul class="changes"><li><span>Updates now come from quadrantmac.com, Quadrant's new home</span></li><li><span>The Website link in Support Quadrant opens quadrantmac.com</span></li></ul>
+        </article>
+      </li>
+      <li class="release" id="v1.0.0">
+        <div class="when"><time datetime="2026-10-13">Oct 13, 2026</time></div>
+        <article class="card" aria-labelledby="v1.0.0-title">
+          <div class="card-head">
+            <h2 id="v1.0.0-title"><a href="#v1.0.0">Version 1.0.0</a></h2>
+            <span class="when-inline"><time datetime="2026-10-13">Oct 13, 2026</time></span>
+          </div>
+          <p>First public release of Quadrant.</p>
+          <ul class="changes"><li><span>Snap windows to halves, thirds, corners and other displays with one shortcut</span></li><li><span>Drag windows to screen edges to snap them</span></li><li><span>Move and resize windows from anywhere by holding ⌃⌥</span></li><li><span>Grid picker, tile all windows, saved layouts and app rules</span></li><li><span>Shortcut cheat sheet (⌃⌥⌘/)</span></li><li><span>Free, with quiet automatic updates</span></li></ul>
+        </article>
+      </li>
+    </ol>
+<!-- RELEASES:END -->
+
+    <section class="cta" aria-labelledby="cta-title">
+      <div>
+        <h2 id="cta-title">Get the latest Quadrant</h2>
+        <p>Free for macOS. Already installed? It updates itself.</p>
+      </div>
+      <div>
+        <a class="btn primary" href="https://github.com/kouathao/quadrant-app/releases/latest/download/Quadrant.dmg">Download Quadrant — Free</a>
+        <a class="btn secondary" href="guide.html">Read the guide</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>© 2026 Quadrant · <a href="changelog.html">Changelog</a> · <a href="mailto:kouathao09@gmail.com">support@quadrantmac.com</a> · <button type="button" class="linklike" id="cookie-settings">Cookie settings</button></footer>
+</div>
+</body>
+</html>
