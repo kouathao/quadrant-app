@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How to Use Quadrant — Mac Window Manager Guide</title>
-<meta name="description" content="Step-by-step guide to Quadrant for Mac: snap windows with keyboard shortcuts, drag to snap, move from anywhere, grid picker, saved layouts, app rules and more, with short animations.">
+<meta name="description" content="Step-by-step guide to Quadrant for Mac: snap windows with keyboard shortcuts, drag to snap, move from anywhere, grid picker, snap layouts, saved layouts, app rules and more, with short animations.">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://quadrantmac.com/guide.html">
 <meta name="theme-color" content="#4f5bf7">
@@ -34,7 +34,7 @@
       "@type": "TechArticle",
       "@id": "https://quadrantmac.com/guide.html#article",
       "headline": "How to use Quadrant",
-      "description": "Step-by-step guide to Quadrant for Mac: keyboard snapping, drag to snap, move from anywhere, grid picker, saved layouts, app rules and more.",
+      "description": "Step-by-step guide to Quadrant for Mac: keyboard snapping, drag to snap, move from anywhere, grid picker, snap layouts, saved layouts, app rules and more.",
       "url": "https://quadrantmac.com/guide.html",
       "image": "https://quadrantmac.com/images/og-image.png",
       "inLanguage": "en",
@@ -147,6 +147,12 @@
   .scene .grid.show { opacity: 1; }
   .scene .grid i { border-radius: 4px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.35); }
   .scene .grid i.sel { background: rgba(79,91,247,.55); border-color: #fff; }
+  .scene .snapl { padding: 6px 8px; overflow: hidden; }
+  .scene .snapl .tpls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .scene .snapl .t { position: relative; aspect-ratio: 16 / 10; border-radius: 3px; background: rgba(0,0,0,.06); }
+  .scene .snapl .z { position: absolute; box-sizing: border-box; border: 1.5px solid transparent; background: rgba(0,0,0,.2); background-clip: padding-box; border-radius: 3px; transition: background-color .15s; }
+  .scene .snapl .z.hl { background-color: var(--accent); }
+  .scene .snapl .lbl { font-size: 7px; color: #666; text-align: center; margin-top: 2px; white-space: nowrap; }
   .scene .cursor { position: absolute; width: 16px; height: 22px; margin: -2px 0 0 -2px; z-index: 50; filter: drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
   .scene .cursor.down { transform: scale(.85); }
   .scene .keys { position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%); z-index: 60; background: rgba(0,0,0,.6); color: #fff;
@@ -221,6 +227,7 @@
       <div class="lvl">Mouse tricks</div>
       <a href="#anywhere">Move from anywhere</a>
       <a href="#grid">Grid picker</a>
+      <a href="#snaplayouts">Snap layouts</a>
       <div class="lvl">Power features</div>
       <a href="#layouts">Saved layouts</a>
       <a href="#tile">Tile all windows</a>
@@ -337,6 +344,20 @@
             </ol>
           </div>
           <div class="scene" data-scene="grid" role="img" aria-label="Animation: a grid appears, cells are selected by dragging, and the window fills the selection"></div>
+        </article>
+
+        <article class="topic" id="snaplayouts">
+          <div>
+            <h3>Snap layouts</h3>
+            <p class="what">Pick from ready-made splits, like on Windows.</p>
+            <ol>
+              <li>Press <kbd>⌃⌥⌘S</kbd>, or <b role="img" aria-label="menu bar icon">▦</b> → <b>Snap Layouts…</b></li>
+              <li>Hover a zone in any layout to preview where the window will go.</li>
+              <li>Click it and the window moves there. <kbd>Esc</kbd> cancels.</li>
+            </ol>
+            <p class="note">16 layouts: halves, thirds, 20 / 60 / 20, half + stack, two-thirds, quarters, six, four columns and rows for portrait screens. Arrow keys and <kbd>Return</kbd> work too.</p>
+          </div>
+          <div class="scene" data-scene="snaplayouts" role="img" aria-label="Animation: a panel of layout thumbnails appears, hovering a zone previews it, and clicking moves the window there; a second window is placed beside it the same way"></div>
         </article>
       </div>
 
@@ -471,6 +492,8 @@
      keys:'⌘←' / ''        show / hide the key badge
      preview:[x,y,w,h]/null translucent snap preview
      grid:true/false, gridSel:[c0,r0,c1,r1]/null
+     point:['id', n]       move the pointer to the n-th zone (.z) inside object 'id'
+     zoneHl:['id', n]      highlight the n-th zone inside object 'id' (-1 for none)
      down:true/false       mouse button pressed look
      tap:true              ripple at the pointer (snap feedback)
      wait:ms               how long to hold after this step (default 750)
@@ -483,6 +506,18 @@
 
   const win = (rect, title, tint, extra = {}) => ({ type: 'win', rect, title, tint, ...extra });
   const box = (rect, cls, html, extra = {}) => ({ type: 'box', rect, cls, html, ...extra });
+
+  // Snap layouts panel: thumbnails whose zones are [x, y, w, h] fractions of the screen.
+  const SNAP_TEMPLATES = [
+    ['Halves', [[0, 0, .5, 1], [.5, 0, .5, 1]]],
+    ['Thirds', [[0, 0, 1 / 3, 1], [1 / 3, 0, 1 / 3, 1], [2 / 3, 0, 1 / 3, 1]]],
+    ['Wide Center', [[0, 0, .2, 1], [.2, 0, .6, 1], [.8, 0, .2, 1]]],
+    ['Half + Stack', [[0, 0, .5, 1], [.5, 0, .5, .5], [.5, .5, .5, .5]]],
+  ];
+  const pct = v => `${+(v * 100).toFixed(3)}%`;
+  const SNAP_PANEL = '<div class="ttl">Snap Layouts</div><div class="tpls">' + SNAP_TEMPLATES.map(([name, zones]) =>
+    '<div><div class="t">' + zones.map(([x, y, w, h]) => `<i class="z" style="left:${pct(x)};top:${pct(y)};width:${pct(w)};height:${pct(h)}"></i>`).join('')
+    + `</div><div class="lbl">${name}</div></div>`).join('') + '</div>';
 
   const SCENES = {
     start: {
@@ -678,6 +713,29 @@
       ],
     },
 
+    snaplayouts: {
+      cursor: [62, 84],
+      objs: {
+        a: win([10, 34, 38, 44], 'Code', 1),
+        b: win([46, 42, 38, 42], 'Safari', 2),
+        panel: box([12, 21, 76, 36], 'panel snapl', SNAP_PANEL, { hidden: true }),
+      },
+      // Zones are numbered across thumbnails: Wide Center is 5–7, Half + Stack is 8–10.
+      steps: [
+        { focus: 'a', wait: 500 },
+        { keys: '⌃⌥⌘S', show: 'panel', wait: 700 },
+        { point: ['panel', 6], zoneHl: ['panel', 6], preview: R(.2, 0, .6, 1), wait: 900 },
+        { point: ['panel', 8], zoneHl: ['panel', 8], preview: R(0, 0, .5, 1), wait: 700 },
+        { down: true, wait: 150 },
+        { down: false, hide: 'panel', zoneHl: ['panel', -1], preview: null, keys: '', set: { a: R(0, 0, .5, 1) }, wait: 900 },
+        { focus: 'b', wait: 400 },
+        { keys: '⌃⌥⌘S', show: 'panel', wait: 600 },
+        { point: ['panel', 9], zoneHl: ['panel', 9], preview: R(.5, 0, .5, .5), wait: 800 },
+        { down: true, wait: 150 },
+        { down: false, hide: 'panel', zoneHl: ['panel', -1], preview: null, keys: '', set: { b: R(.5, 0, .5, .5) }, wait: 1400 },
+      ],
+    },
+
     import: {
       cursor: [80, 85],
       objs: {
@@ -726,7 +784,7 @@
     el.appendChild(grid);
     const cursor = document.createElement('div'); cursor.className = 'cursor'; cursor.innerHTML = CURSOR_SVG; el.appendChild(cursor);
     const keys = document.createElement('div'); keys.className = 'keys'; el.appendChild(keys);
-    return { el, def, nodes, preview, grid, cursor, keys, rects: {}, cur: null, z };
+    return { el, def, nodes, preview, grid, cursor, keys, rects: {}, cur: null, z, z0: z };
   }
 
   const place = (n, r) => { n.style.left = r[0] + '%'; n.style.top = r[1] + '%'; n.style.width = r[2] + '%'; n.style.height = r[3] + '%'; };
@@ -734,12 +792,17 @@
   function reset(s) {
     s.el.classList.add('instant');
     s.el.classList.remove('moving');
+    // Restart the stacking order each loop so windows never climb above menus and panels.
+    s.z = s.z0;
+    let wz = 1;
     for (const [id, o] of Object.entries(s.def.objs)) {
+      if (o.type === 'win') s.nodes[id].style.zIndex = wz++;
       s.rects[id] = [...o.rect];
       place(s.nodes[id], o.rect);
       s.nodes[id].classList.toggle('hidden', !!o.hidden);
       s.nodes[id].classList.remove('focus');
       if (o.type === 'box' && o.html !== undefined) s.nodes[id].innerHTML = o.html;
+      s.nodes[id].querySelectorAll('.z.hl').forEach(z => z.classList.remove('hl'));
     }
     s.preview.classList.remove('show');
     s.grid.classList.remove('show');
@@ -756,6 +819,13 @@
 
   function apply(s, st) {
     const list = v => (Array.isArray(v) ? v : [v]);
+    if (st.point) {
+      const [id, idx] = st.point;
+      const z = s.nodes[id].querySelectorAll('.z')[idx].getBoundingClientRect();
+      const box = s.el.getBoundingClientRect();
+      // Aim a little up-left of center so the pointer tip sits inside small zones.
+      st = { ...st, cursor: [(z.left + z.width * .45 - box.left) / box.width * 100, (z.top + z.height * .45 - box.top) / box.height * 100] };
+    }
     if (st.cursor) {
       const [dx, dy] = s.cur ? [st.cursor[0] - s.cur[0], st.cursor[1] - s.cur[1]] : [0, 0];
       if (st.drag) { const r = s.rects[st.drag]; s.rects[st.drag] = [r[0] + dx, r[1] + dy, r[2], r[3]]; }
@@ -776,6 +846,10 @@
       n.classList.toggle('focus', id === st.focus);
       if (id === st.focus) n.style.zIndex = ++s.z;
     });
+    if (st.zoneHl) {
+      const [id, idx] = st.zoneHl;
+      s.nodes[id].querySelectorAll('.z').forEach((z, i) => z.classList.toggle('hl', i === idx));
+    }
     if (st.menuHl) {
       const [id, idx] = st.menuHl;
       s.nodes[id].querySelectorAll(':scope > div').forEach((d, i) => d.classList.toggle('hl', i === idx));
